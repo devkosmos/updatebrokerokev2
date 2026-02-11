@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Личный кабинет - BROKEROK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --dark: #0f172a;
+            --light: #ffffff;
+            --gray: #64748b;
+            --gray-light: #f1f5f9;
+            --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --radius: 16px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-light);
+            color: var(--dark);
+            padding-top: 70px;
+        }
+
+        .navbar {
+            background: var(--light);
+            box-shadow: var(--shadow-sm);
+            position: fixed;
+            top: 0; width: 100%; z-index: 1000;
+            height: 70px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 40px;
+            height: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+
+        .profile-header {
+            background: white;
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: var(--shadow-sm);
+            margin-bottom: 40px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            border: 1px solid rgba(0,0,0,0.05);
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            background: var(--primary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 900;
+            overflow: hidden;
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .avatar-overlay {
+            position: absolute; bottom: 0; width: 100%; background: rgba(0,0,0,0.5);
+            color: white; font-size: 10px; padding: 5px 0; text-align: center;
+            opacity: 0; transition: 0.3s;
+        }
+        .profile-avatar:hover .avatar-overlay { opacity: 1; }
+
+        .profile-info {
+            flex-grow: 1;
+        }
+
+        .profile-info h2 {
+            font-size: 28px;
+            margin-bottom: 5px;
+        }
+
+        .profile-info p {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        .profile-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .btn-outline {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .tab {
+            padding: 15px 25px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--gray);
+            font-size: 15px;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--primary);
+        }
+
+        .tab.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        .property-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .property-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .property-image {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background: #e9ecef;
+        }
+
+        .property-content {
+            padding: 20px;
+        }
+
+        .property-price {
+            font-size: 22px;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .property-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .property-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .settings-form {
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: var(--shadow-sm);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--dark);
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.1);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                text-align: center;
+                padding: 30px 20px;
+            }
+            .profile-actions {
+                width: 100%;
+                flex-direction: column;
+            }
+            .container {
+                padding: 20px;
+            }
+            .navbar-container {
+                padding: 0 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="logo">BROKEROK</a>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <a href="/" style="color: var(--primary); text-decoration: none; font-weight: 600;">← На главную</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="profile-header">
+            <div class="profile-avatar" id="profileAvatar">
+                <span id="profileInitials">U</span>
+                <div class="avatar-overlay">Сменить</div>
+            </div>
+            <div class="profile-info">
+                <h2 id="userName">Загрузка...</h2>
+                <p id="userEmail">email@example.com</p>
+            </div>
+            <div class="profile-actions">
+                <button class="btn btn-outline" onclick="logout()">Выйти</button>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="favCount">0</div>
+                <div class="stat-label">Избранное</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Просмотры</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">0</div>
+                <div class="stat-label">Заявки</div>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('favorites', this)">Избранное</button>
+            <button class="tab" onclick="switchTab('settings', this)">Настройки</button>
+        </div>
+
+        <div id="favorites" class="tab-content active">
+            <div class="grid" id="favoritesGrid">
+                <!-- Избранные объекты -->
+            </div>
+        </div>
+
+        <div id="settings" class="tab-content">
+            <div class="settings-form">
+                <form id="profileForm" onsubmit="updateProfile(event)">
+                    <div class="form-group">
+                        <label>Имя</label>
+                        <input type="text" id="editName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Телефон</label>
+                        <input type="text" id="editPhone">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Сохранить изменения</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const token = localStorage.getItem('token');
+        if (!token) window.location.href = '/';
+
+        async function loadProfile() {
+            const res = await fetch('/api/me', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const user = await res.json();
+                document.getElementById('userName').textContent = user.name;
+                document.getElementById('userEmail').textContent = user.email;
+                document.getElementById('profileInitials').textContent = user.name[0].toUpperCase();
+                document.getElementById('editName').value = user.name;
+                document.getElementById('editPhone').value = user.phone || '';
+            } else {
+                logout();
+            }
+        }
+
+        async function loadFavorites() {
+            const res = await fetch('/api/favorites', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+                const favs = await res.json();
+                document.getElementById('favCount').textContent = favs.length;
+                const grid = document.getElementById('favoritesGrid');
+                if (favs.length === 0) {
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <i class="far fa-heart"></i>
+                            <p>У вас пока нет избранных объектов</p>
+                            <a href="/" class="btn btn-primary" style="margin-top: 20px;">Найти недвижимость</a>
+                        </div>
+                    `;
+                    return;
+                }
+                grid.innerHTML = favs.map(p => `
+                    <div class="property-card" onclick="location.href='/property/${p.id}'">
+                        <img src="${p.images[0] || '/static/images/4Eaa6DysGCj9.jpg'}" class="property-image">
+                        <div class="property-content">
+                            <div class="property-price">$${p.price.toLocaleString()}</div>
+                            <div class="property-title">${p.title}</div>
+                            <span class="property-link">Подробнее →</span>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function switchTab(id, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        async function updateProfile(e) {
+            e.preventDefault();
+            const name = document.getElementById('editName').value;
+            const phone = document.getElementById('editPhone').value;
+            const res = await fetch('/api/me', {
+                method: 'PUT',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ name, phone })
+            });
+            if (res.ok) {
+                alert('Профиль обновлен');
+                loadProfile();
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '/';
+        }
+
+        window.onload = () => {
+            loadProfile();
+            loadFavorites();
+        };
+    </script>
+</body>
+</html>

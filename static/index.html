@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BROKEROK - Премиум недвижимость в Турции</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .property-status {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: bold;
+        z-index: 10;
+    }
+
+    .status-available {
+        background-color: #28a745;
+        color: white;
+    }
+
+    .status-sold {
+        background-color: #dc3545;
+        color: white;
+    }
+
+    .status-pending {
+        background-color: #ffc107;
+        color: #000;
+    }
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --dark: #0f172a;
+            --light: #ffffff;
+            --gray: #64748b;
+            --gray-light: #f1f5f9;
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --radius: 16px;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--gray-light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        /* NAVBAR */
+        .navbar {
+            background: var(--light);
+            position: fixed;
+            top: 0; width: 100%; z-index: 1000;
+            height: 70px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex; align-items: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        .navbar-container {
+            max-width: 1400px; margin: 0 auto; padding: 0 40px;
+            width: 100%; display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo {
+            font-size: 24px; font-weight: 900; color: var(--primary);
+            text-decoration: none; letter-spacing: -0.5px;
+        }
+        .nav-menu { display: flex; gap: 30px; align-items: center; }
+        .nav-item {
+            color: var(--dark); text-decoration: none; font-weight: 600;
+            font-size: 14px; transition: 0.2s; cursor: pointer;
+        }
+        .nav-item:hover { color: var(--primary); }
+
+        .auth-buttons { display: flex; gap: 12px; }
+        .btn {
+            padding: 10px 24px; border-radius: 8px; font-weight: 700;
+            font-size: 14px; cursor: pointer; transition: 0.2s; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px; border: none;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); transform: translateY(-1px); }
+        .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
+
+        /* HERO */
+        .hero {
+            height: 600px; margin-top: 70px; position: relative;
+            overflow: hidden;
+            display: flex; align-items: center; justify-content: center; text-align: center; color: white;
+        }
+        .hero-video {
+            position: absolute; top: 50%; left: 50%;
+            min-width: 100%; min-height: 100%; width: auto; height: auto;
+            transform: translate(-50%, -50%);
+            object-fit: cover; z-index: -2;
+        }
+        .hero-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(10, 20, 40, 0.6) 0%, rgba(0, 102, 255, 0.4) 100%);
+            z-index: -1;
+        }
+        .hero-background {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://images.unsplash.com/photo-1524231757912-21f4fe3a7200?auto=format&fit=crop&w=2000&q=80') center/cover no-repeat;
+            z-index: -3;
+        }
+        .hero-content { max-width: 900px; padding: 0 20px; z-index: 1; }
+        .hero h1 { font-size: 48px; font-weight: 900; margin-bottom: 15px; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
+        .hero p { font-size: 18px; margin-bottom: 40px; opacity: 0.95; text-shadow: 0 1px 5px rgba(0,0,0,0.2); }
+
+        .search-card {
+            background: white; border-radius: 16px; padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2); color: var(--dark); text-align: left;
+            max-width: 1000px; margin: 0 auto;
+        }
+        .search-tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .search-tab {
+            padding: 10px 20px; border: none; background: #f0f0f0; border-radius: 8px;
+            font-weight: 700; cursor: pointer; color: var(--gray); transition: 0.2s;
+        }
+        .search-tab.active { background: var(--primary); color: white; }
+        
+        .search-form { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 15px; 
+            align-items: flex-end; 
+        }
+        .form-group label { display: block; font-size: 11px; font-weight: 800; color: var(--gray); margin-bottom: 6px; text-transform: uppercase; }
+        .form-group select, .form-group input { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; outline: none; font-size: 14px; }
+
+        /* PROPERTIES */
+        .container { max-width: 1400px; margin: 0 auto; padding: 60px 40px; }
+        .section-header { margin-bottom: 40px; }
+        .section-title { font-size: 32px; font-weight: 900; margin-bottom: 10px; }
+        .section-subtitle { color: var(--gray); font-size: 16px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 30px; }
+        .card { 
+            background: white; border-radius: var(--radius); overflow: hidden; 
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); transition: all 0.3s ease; 
+            cursor: pointer; border: 1px solid rgba(0,0,0,0.05);
+        }
+        .card:hover { transform: translateY(-10px); box-shadow: var(--shadow-lg); }
+        .img-container { overflow: hidden; height: 240px; position: relative; }
+        .card-img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .card:hover .card-img { transform: scale(1.1); }
+        .card-badge { position: absolute; top: 12px; right: 12px; background: var(--primary); color: white; padding: 6px 12px; border-radius: 6px; font-size: 12px; font-weight: 700; }
+        .card-body { padding: 20px; }
+        .card-price { font-size: 24px; font-weight: 900; color: var(--primary); margin-bottom: 5px; }
+        .card-title { font-size: 16px; font-weight: 700; margin-bottom: 12px; height: 44px; overflow: hidden; }
+        .card-meta { font-size: 13px; color: var(--gray); display: flex; justify-content: space-between; align-items: center; }
+
+        /* MODALS */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(10, 20, 40, 0.7); backdrop-filter: blur(5px);
+            z-index: 2000; align-items: center; justify-content: center;
+        }
+        .modal.show { display: flex; }
+        .modal-content {
+            background: white; padding: 40px; border-radius: 20px; width: 100%; max-width: 400px;
+            box-shadow: 0 25px 60px rgba(0,0,0,0.3); position: relative;
+        }
+        .modal-close { position: absolute; top: 20px; right: 20px; font-size: 24px; cursor: pointer; color: var(--gray); border: none; background: none; }
+        .modal h2 { font-size: 24px; font-weight: 900; margin-bottom: 10px; text-align: center; }
+        .modal p { text-align: center; color: var(--gray); margin-bottom: 25px; font-size: 14px; }
+        .auth-input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #eee; border-radius: 10px; background: #f9f9f9; outline: none; }
+        .auth-btn { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+
+        .user-menu { display: none; align-items: center; gap: 15px; }
+        .user-menu.active { display: flex; }
+        .avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-weight: 800; cursor: pointer; }
+
+        /* FOOTER */
+        .footer { background: var(--dark); color: white; padding: 60px 40px; margin-top: 80px; }
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; max-width: 1400px; margin: 0 auto; }
+        .footer-section h3 { font-size: 18px; font-weight: 900; margin-bottom: 20px; }
+        .footer-link { display: block; color: rgba(255,255,255,0.7); text-decoration: none; margin-bottom: 10px; font-size: 14px; }
+
+        @media (max-width: 768px) {
+            .nav-menu { display: none; }
+            .hero h1 { font-size: 32px; }
+            .navbar-container { padding: 0 20px; }
+            .container { padding: 40px 20px; }
+            .search-form { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="logo">BROKEROK</a>
+            <div class="nav-menu">
+                <a href="#" class="nav-item" onclick="filterByDealType('rent'); return false;">Аренда</a>
+                <a href="#" class="nav-item" onclick="filterByDealType('sale'); return false;">Продажа</a>
+                <div class="auth-buttons" id="authButtons">
+                    <button class="btn btn-outline" onclick="showModal('loginModal')">Войти</button>
+                    <button class="btn btn-primary" onclick="showModal('registerModal')">Регистрация</button>
+                </div>
+                <div class="user-menu" id="userMenu">
+                    <div class="avatar" id="userInitials" onclick="location.href='/profile'">U</div>
+                    <button class="btn btn-outline" onclick="logout()" style="padding: 8px 15px;">Выйти</button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-background"></div>
+        <video autoplay muted loop playsinline class="hero-video">
+            <source src="https://cdn.pixabay.com/video/2023/07/03/169970-842345686_large.mp4" type="video/mp4">
+        </video>
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1>Найдите идеальный дом в Турции</h1>
+            <p>Премиальная недвижимость в лучших районах Стамбула, Анталии и других городов</p>
+            
+            <div class="search-card">
+                <div class="search-tabs">
+                    <button class="search-tab active" onclick="switchDealType('sale', this)">Купить</button>
+                    <button class="search-tab" onclick="switchDealType('rent', this)">Снять</button>
+                </div>
+                <form class="search-form" onsubmit="handleSearch(event)">
+                    <div class="form-group">
+                        <label>Город</label>
+                        <select id="citySelect">
+                            <option value="">Все города</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Тип объекта</label>
+                        <select id="typeSelect">
+                            <option value="">Любой</option>
+                            <option value="apartment">Квартира</option>
+                            <option value="villa">Вилла</option>
+                            <option value="commercial">Коммерческая</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Макс. цена ($)</label>
+                        <input type="number" id="maxPrice" placeholder="Напр. 500000">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="height: 46px; justify-content: center;">Поиск</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Актуальные предложения</h2>
+            <p class="section-subtitle">Лучшие объекты, отобранные нашими экспертами</p>
+        </div>
+        <div class="grid" id="propertiesContainer">
+            <!-- Карточки объектов -->
+        </div>
+    </div><a href="/favorites" class="nav-link" style="color: var(--primary); text-decoration: none; margin-left: auto; margin-right: 15px;">
+    <i class="fas fa-heart"></i> Избранное
+</a>
+
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('loginModal')">&times;</button>
+            <h2>С возвращением</h2>
+            <p>Войдите в свой аккаунт</p>
+            <form onsubmit="handleLogin(event)">
+                <input type="email" id="loginEmail" class="auth-input" placeholder="Email" required>
+                <input type="password" id="loginPassword" class="auth-input" placeholder="Пароль" required>
+                <button type="submit" class="auth-btn">Войти</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Register Modal -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeModal('registerModal')">&times;</button>
+            <h2>Регистрация</h2>
+            <p>Создайте аккаунт для доступа ко всем функциям</p>
+            <form onsubmit="handleRegister(event)">
+                <input type="text" id="regName" class="auth-input" placeholder="Имя" required>
+                <input type="email" id="regEmail" class="auth-input" placeholder="Email" required>
+                <input type="password" id="regPassword" class="auth-input" placeholder="Пароль" required>
+                <button type="submit" class="auth-btn">Зарегистрироваться</button>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <div class="footer-grid">
+            <div class="footer-section">
+                <h3 style="color: var(--primary);">BROKEROK</h3>
+                <p style="font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 10px;">Ваш надежный партнер на рынке недвижимости Турции с 2015 года.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Навигация</h3>
+                <a href="#" class="footer-link">О компании</a>
+                <a href="#" class="footer-link">Услуги</a>
+                <a href="#" class="footer-link">Контакты</a>
+            </div>
+            <div class="footer-section">
+                <h3>Контакты</h3>
+                <p class="footer-link"><i class="fas fa-phone"></i> +90 555 000 00 00</p>
+                <p class="footer-link"><i class="fas fa-envelope"></i> info@brokeroke.com</p>
+                <p class="footer-link"><i class="fas fa-map-marker-alt"></i> Istanbul, Turkey</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="/static/js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Услуги - BROKEROK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        :root {
+            --primary: #0066ff;
+            --primary-dark: #0052cc;
+            --secondary: #e3f2fd;
+            --dark: #1a1a1a;
+            --light: #ffffff;
+            --gray: #666;
+            --bg: #f5f5f5;
+            --border-radius: 12px;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--dark);
+            padding-top: 80px;
+        }
+
+        .navbar {
+            background: white;
+            box-shadow: var(--shadow);
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            height: 70px;
+            display: flex;
+            align-items: center;
+        }
+
+        .navbar-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 30px;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 900;
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 60px 30px;
+        }
+
+        .page-title {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 15px;
+        }
+
+        .page-subtitle {
+            font-size: 18px;
+            color: var(--gray);
+            margin-bottom: 50px;
+        }
+
+        .service-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+        }
+
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        .service-icon {
+            font-size: 40px;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .service-title {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .service-description {
+            color: var(--gray);
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .service-list {
+            list-style: none;
+            margin-bottom: 20px;
+        }
+
+        .service-list li {
+            padding: 8px 0;
+            color: var(--gray);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .service-list li:before {
+            content: "✓";
+            color: var(--primary);
+            font-weight: 700;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 700;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%);
+            color: white;
+            padding: 60px 30px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .hero-section h2 {
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 15px;
+        }
+
+        .hero-section p {
+            font-size: 18px;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+
+        .faq-section {
+            margin-top: 50px;
+        }
+
+        .faq-item {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow);
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .faq-item:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .faq-question {
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-answer {
+            display: none;
+            margin-top: 15px;
+            color: var(--gray);
+            line-height: 1.8;
+        }
+
+        .faq-item.active .faq-answer {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .page-title {
+                font-size: 24px;
+            }
+            .service-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="/" class="logo">BROKEROK</a>
+            <a href="/" style="text-decoration: none; color: var(--primary); font-weight: 700;">На главную</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <h1 class="page-title" id="pageTitle">Услуги BROKEROK</h1>
+        <p class="page-subtitle" id="pageSubtitle">Полный спектр услуг для успешной сделки</p>
+
+        <div id="servicesContent"></div>
+
+        <!-- FAQ -->
+        <div class="faq-section">
+            <h2 style="font-size: 28px; font-weight: 900; margin-bottom: 30px;">Часто задаваемые вопросы</h2>
+            <div id="faqContent"></div>
+        </div>
+
+        <!-- CTA -->
+        <div class="hero-section">
+            <h2>Нужна помощь?</h2>
+            <p>Свяжитесь с нашими специалистами для консультации</p>
+            <button class="btn" onclick="alert('Контакты: +90 555 123 45 67 или info@brokerok.com')">
+                <i class="fas fa-phone"></i> Позвонить
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const serviceType = new URLSearchParams(window.location.search).get('type') || 'mortgage';
+
+        const services = {
+            mortgage: {
+                title: 'Ипотека в Турции',
+                subtitle: 'Получите ипотеку на лучших условиях',
+                content: `
+                    <div class="service-grid">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-percent"></i></div>
+                            <h3 class="service-title">Низкие процентные ставки</h3>
+                            <p class="service-description">Ставки от 8% годовых в ведущих банках Турции</p>
+                            <ul class="service-list">
+                                <li>Ziraat Bank - 8.5%</li>
+                                <li>VakıfBank - 8.9%</li>
+                                <li>İş Bankası - 9.2%</li>
+                            </ul>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-clock"></i></div>
+                            <h3 class="service-title">Быстрое одобрение</h3>
+                            <p class="service-description">Решение по заявке в течение 5-7 дней</p>
+                            <ul class="service-list">
+                                <li>Минимум документов</li>
+                                <li>Онлайн подача</li>
+                                <li>Поддержка на русском</li>
+                            </ul>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-handshake"></i></div>
+                            <h3 class="service-title">Помощь на каждом этапе</h3>
+                            <p class="service-description">Наши специалисты помогут вам на всех этапах</p>
+                            <ul class="service-list">
+                                <li>Подбор оптимального банка</li>
+                                <li>Подготовка документов</li>
+                                <li>Сопровождение до подписания</li>
+                            </ul>
+                        </div>
+                    </div>
+                `,
+                faq: [
+                    { q: 'Какие документы нужны для ипотеки?', a: 'Паспорт, справка о доходах, выписка из банка, документы о собственности (если есть).' },
+                    { q: 'Какой минимальный первоначальный взнос?', a: 'Обычно от 20% стоимости недвижимости, но некоторые банки предлагают от 10%.' },
+                    { q: 'Могу ли я получить ипотеку как иностранец?', a: 'Да, иностранцы могут получить ипотеку. Нужны паспорт, ВНЖ и справка о доходах.' }
+                ]
+            },
+            legal: {
+                title: 'Юридическое сопровождение',
+                subtitle: 'Безопасная сделка с полной проверкой документов',
+                content: `
+                    <div class="service-grid">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-file-contract"></i></div>
+                            <h3 class="service-title">Проверка документов</h3>
+                            <p class="service-description">Полная проверка ТАПУ и всех документов</p>
+                            <ul class="service-list">
+                                <li>Проверка ТАПУ</li>
+                                <li>История собственности</li>
+                                <li>Проверка налогов</li>
+                            </ul>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-gavel"></i></div>
+                            <h3 class="service-title">Сопровождение сделки</h3>
+                            <p class="service-description">Юридическое сопровождение на всех этапах</p>
+                            <ul class="service-list">
+                                <li>Подготовка договора</li>
+                                <li>Переговоры с продавцом</li>
+                                <li>Регистрация в Тапу</li>
+                            </ul>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-passport"></i></div>
+                            <h3 class="service-title">ВНЖ и Гражданство</h3>
+                            <p class="service-description">Помощь в получении ВНЖ через недвижимость</p>
+                            <ul class="service-list">
+                                <li>Оформление ВНЖ</li>
+                                <li>Подготовка документов</li>
+                                <li>Консультация по гражданству</li>
+                            </ul>
+                        </div>
+                    </div>
+                `,
+                faq: [
+                    { q: 'Сколько стоит юридическое сопровождение?', a: 'Стоимость зависит от сложности сделки, обычно от 1000$ до 3000$.' },
+                    { q: 'Как долго длится проверка документов?', a: 'Обычно 3-5 рабочих дней для полной проверки.' },
+                    { q: 'Нужна ли виза для получения ВНЖ?', a: 'Нет, ВНЖ можно получить без визы при покупке недвижимости от 250 000$.' }
+                ]
+            },
+            evaluation: {
+                title: 'Оценка недвижимости',
+                subtitle: 'Независимая оценка стоимости вашей недвижимости',
+                content: `
+                    <div class="service-grid">
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-chart-line"></i></div>
+                            <h3 class="service-title">Рыночная оценка</h3>
+                            <p class="service-description">Определение справедливой рыночной стоимости</p>
+                            <ul class="service-list">
+                                <li>Анализ рынка</li>
+                                <li>Сравнение аналогов</li>
+                                <li>Отчет оценки</li>
+                            </ul>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-home"></i></div>
+                            <h3 class="service-title">Осмотр объекта</h3>
+                            <p class="service-description">Профессиональный осмотр и анализ состояния</p>
+                            <ul class="service-list">
+                                <li>Проверка конструкции</li>
+                                <li>Оценка коммуникаций</li>
+                                <li>Фотодокументирование</li>
+                            </ul>
+                        </div>
+                        <div class="service-card">
+                            <div class="service-icon"><i class="fas fa-certificate"></i></div>
+                            <h3 class="service-title">Официальный отчет</h3>
+                            <p class="service-description">Сертифицированный отчет об оценке</p>
+                            <ul class="service-list">
+                                <li>Признан банками</li>
+                                <li>Действителен 6 месяцев</li>
+                                <li>Подробный анализ</li>
+                            </ul>
+                        </div>
+                    </div>
+                `,
+                faq: [
+                    { q: 'Сколько стоит оценка?', a: 'Обычно от 300$ до 800$ в зависимости от типа и стоимости объекта.' },
+                    { q: 'Как долго делается оценка?', a: 'Осмотр занимает 1-2 часа, отчет готовится 3-5 дней.' },
+                    { q: 'Признают ли оценку банки?', a: 'Да, наши оценки признаны всеми турецкими банками.' }
+                ]
+            }
+        };
+
+        const service = services[serviceType] || services.mortgage;
+        document.getElementById('pageTitle').textContent = service.title;
+        document.getElementById('pageSubtitle').textContent = service.subtitle;
+        document.getElementById('servicesContent').innerHTML = service.content;
+
+        const faqHtml = service.faq.map((item, idx) => `
+            <div class="faq-item" onclick="this.classList.toggle('active')">
+                <div class="faq-question">
+                    <span>${item.q}</span>
+                    <span style="color: var(--primary); font-size: 18px;">+</span>
+                </div>
+                <div class="faq-answer">${item.a}</div>
+            </div>
+        `).join('');
+        document.getElementById('faqContent').innerHTML = faqHtml;
+    </script>
+</body>
+</html>

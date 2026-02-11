@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Оплата Криптовалютой - BROKEROK</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .payment-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 500px;
+            width: 100%;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .qr-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+        }
+        
+        #qrCode {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+        
+        .payment-info {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: left;
+        }
+        
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .info-row:last-child {
+            border-bottom: none;
+        }
+        
+        .info-label {
+            color: #666;
+            font-weight: 600;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .wallet-address {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 12px;
+            margin: 15px 0;
+            border: 2px dashed #667eea;
+        }
+        
+        .copy-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 10px 5px;
+        }
+        
+        .copy-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin: 20px 0;
+        }
+        
+        .status.pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status.confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .instructions {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            text-align: left;
+            border-radius: 5px;
+        }
+        
+        .instructions h3 {
+            color: #2196F3;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        
+        .instructions ol {
+            margin-left: 20px;
+            color: #333;
+        }
+        
+        .instructions li {
+            margin: 8px 0;
+            font-size: 14px;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <h1>💰 Оплата Криптовалютой</h1>
+        <p class="subtitle">Отсканируйте QR-код для оплаты</p>
+        
+        <div id="loadingState" style="display: none;">
+            <div class="loading"></div>
+            <p>Загрузка данных платежа...</p>
+        </div>
+        
+        <div id="errorState" style="display: none;" class="error">
+            <strong>Ошибка!</strong>
+            <p id="errorMessage"></p>
+        </div>
+        
+        <div id="paymentContent" style="display: none;">
+            <div class="status pending" id="statusBadge">
+                ⏳ Ожидание оплаты
+            </div>
+            
+            <div class="qr-container">
+                <img id="qrCode" src="" alt="QR Code для оплаты">
+            </div>
+            
+            <div class="payment-info">
+                <div class="info-row">
+                    <span class="info-label">Сумма:</span>
+                    <span class="info-value" id="amount">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Валюта:</span>
+                    <span class="info-value" id="currency">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Сеть:</span>
+                    <span class="info-value" id="network">-</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label">Объект:</span>
+                    <span class="info-value" id="propertyTitle">-</span>
+                </div>
+            </div>
+            
+            <div class="wallet-address" id="walletAddress">-</div>
+            
+            <button class="copy-btn" onclick="copyAddress()">
+                📋 Копировать адрес
+            </button>
+            
+            <button class="copy-btn" onclick="checkStatus()">
+                🔄 Проверить статус
+            </button>
+            
+            <div class="instructions">
+                <h3>📝 Инструкция по оплате:</h3>
+                <ol>
+                    <li>Откройте ваш крипто-кошелек</li>
+                    <li>Отсканируйте QR-код или скопируйте адрес</li>
+                    <li>Отправьте указанную сумму в нужной валюте</li>
+                    <li>Дождитесь подтверждения транзакции</li>
+                    <li>Администратор проверит платеж и подтвердит покупку</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Получаем ID покупки из URL (например: ?purchase_id=123)
+        const urlParams = new URLSearchParams(window.location.search);
+        const purchaseId = urlParams.get('purchase_id') || 1; // Для демо используем 1
+        
+        let currentStatus = 'pending';
+        
+        // Загружаем данные при загрузке страницы
+        window.addEventListener('DOMContentLoaded', loadPaymentData);
+        
+        async function loadPaymentData() {
+            const loadingState = document.getElementById('loadingState');
+            const errorState = document.getElementById('errorState');
+            const paymentContent = document.getElementById('paymentContent');
+            
+            loadingState.style.display = 'block';
+            errorState.style.display = 'none';
+            paymentContent.style.display = 'none';
+            
+            try {
+                const token = localStorage.getItem('token');
+                
+                if (!token) {
+                    throw new Error('Необходима авторизация. Пожалуйста, войдите в систему.');
+                }
+                
+                const response = await fetch(`/api/crypto/purchase/${purchaseId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Не удалось загрузить данные платежа');
+                }
+                
+                const data = await response.json();
+                
+                // Заполняем данные
+                document.getElementById('amount').textContent = `${data.amount} ${data.currency}`;
+                document.getElementById('currency').textContent = data.currency;
+                document.getElementById('network').textContent = data.network;
+                document.getElementById('propertyTitle').textContent = data.property_title;
+                document.getElementById('walletAddress').textContent = data.crypto_address;
+                
+                // Устанавливаем QR-код
+                if (data.qr_code) {
+                    document.getElementById('qrCode').src = `data:image/png;base64,${data.qr_code}`;
+                }
+                
+                // Обновляем статус
+                currentStatus = data.status;
+                updateStatusBadge(data.status);
+                
+                loadingState.style.display = 'none';
+                paymentContent.style.display = 'block';
+                
+            } catch (error) {
+                console.error('Error loading payment data:', error);
+                document.getElementById('errorMessage').textContent = error.message;
+                loadingState.style.display = 'none';
+                errorState.style.display = 'block';
+            }
+        }
+        
+        function updateStatusBadge(status) {
+            const badge = document.getElementById('statusBadge');
+            badge.className = `status ${status}`;
+            
+            switch(status) {
+                case 'pending':
+                    badge.textContent = '⏳ Ожидание оплаты';
+                    break;
+                case 'confirmed':
+                    badge.textContent = '✅ Оплата подтверждена';
+                    badge.style.background = '#d4edda';
+                    badge.style.color = '#155724';
+                    break;
+                case 'rejected':
+                    badge.textContent = '❌ Отклонено';
+                    badge.style.background = '#f8d7da';
+                    badge.style.color = '#721c24';
+                    break;
+            }
+        }
+        
+        function copyAddress() {
+            const address = document.getElementById('walletAddress').textContent;
+            navigator.clipboard.writeText(address).then(() => {
+                alert('✅ Адрес скопирован в буфер обмена!');
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                alert('❌ Не удалось скопировать адрес');
+            });
+        }
+        
+        async function checkStatus() {
+            try {
+                await loadPaymentData();
+                
+                if (currentStatus === 'confirmed') {
+                    alert('🎉 Ваш платеж подтвержден! Спасибо за покупку!');
+                } else if (currentStatus === 'pending') {
+                    alert('⏳ Платеж еще не подтвержден. Пожалуйста, подождите.');
+                }
+            } catch (error) {
+                alert('❌ Ошибка при проверке статуса');
+            }
+        }
+        
+        // Автоматическая проверка статуса каждые 30 секунд
+        setInterval(() => {
+            if (currentStatus === 'pending') {
+                loadPaymentData();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>

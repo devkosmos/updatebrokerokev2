@@ -1,0 +1,3564 @@
+<!DOCTYPE html>
+<html lang="ru" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel - BROKEROK</title>
+    <!-- AdminLTE 3 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/css/adminlte.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/icheck-bootstrap@3.0.1/icheck-bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        :root {
+            --primary: #0d6efd;
+            --secondary: #6c757d;
+            --success: #198754;
+            --info: #0dcaf0;
+            --warning: #ffc107;
+            --danger: #dc3545;
+            --dark: #212529;
+            --light: #f8f9fa;
+        }
+        
+        .dark-mode {
+            background-color: #121212;
+            color: #e0e0e0;
+        }
+        
+        .dark-card {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            border: 1px solid #2d2d2d;
+        }
+        
+        .dark-table {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+        
+        .dark-table thead th {
+            border-bottom: 2px solid #2d2d2d;
+            color: #adb5bd;
+        }
+        
+        .dark-table tbody tr {
+            border-bottom: 1px solid #2d2d2d;
+        }
+        
+        .dark-table tbody tr:hover {
+            background-color: #2d2d2d;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #0d6efd;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .user-avatar.large {
+            width: 60px;
+            height: 60px;
+            font-size: 24px;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .status-available {
+            background-color: #198754;
+            color: white;
+        }
+        
+        .status-sold {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .status-pending {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .property-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            margin: 0 2px;
+            transition: all 0.2s;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-view {
+            background-color: #0dcaf0;
+            color: white;
+        }
+        
+        .btn-edit {
+            background-color: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-delete {
+            background-color: #dc3545;
+            color: white;
+        }
+        
+        .btn-success {
+            background-color: #198754;
+        }
+        
+        .loading {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 0;
+            color: #6c757d;
+        }
+        
+        .loading i {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: #0d6efd;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        .map-container {
+            position: relative;
+            height: 500px;
+            border-radius: 5px;
+            overflow: hidden;
+            border: 1px solid #2d2d2d;
+        }
+        
+        #adminMap {
+            width: 100%;
+            height: 100%;
+        }
+        
+        .upload-area {
+            border: 2px dashed #6c757d;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            background-color: #2d2d2d;
+            margin-bottom: 20px;
+        }
+        
+        .upload-area:hover {
+            border-color: #0d6efd;
+            background-color: #343a40;
+        }
+        
+        .upload-area i {
+            font-size: 48px;
+            color: #6c757d;
+            margin-bottom: 15px;
+        }
+        
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .image-preview img {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 1px solid #2d2d2d;
+        }
+        
+        .modal-content.dark-card {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+        }
+        
+        .modal-header {
+            border-bottom: 1px solid #2d2d2d;
+        }
+        
+        .modal-footer {
+            border-top: 1px solid #2d2d2d;
+        }
+        
+        .form-control {
+            background-color: #2d2d2d;
+            border: 1px solid #444;
+            color: #e0e0e0;
+        }
+        
+        .form-control:focus {
+            background-color: #2d2d2d;
+            border-color: #0d6efd;
+            color: #e0e0e0;
+            box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
+        }
+        
+        .page-link {
+            background-color: #2d2d2d;
+            border-color: #444;
+            color: #e0e0e0;
+        }
+        
+        .page-link:hover {
+            background-color: #343a40;
+            border-color: #0d6efd;
+            color: white;
+        }
+        
+        .page-item.active .page-link {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+        }
+        
+        .small-box {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .small-box .icon {
+            color: rgba(255, 255, 255, 0.15);
+            font-size: 70px;
+            position: absolute;
+            right: 15px;
+            top: 15px;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none !important;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .filter-box {
+            background-color: #2d2d2d;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                z-index: 1000;
+                height: 100vh;
+                overflow-y: auto;
+            }
+            
+            .content-wrapper {
+                margin-left: 0 !important;
+            }
+            
+            .main-header {
+                margin-left: 0 !important;
+            }
+            
+            .map-container {
+                height: 300px;
+            }
+        }
+        
+        /* Стили для кнопок с индикацией загрузки */
+        .btn-loading {
+            position: relative;
+        }
+        
+        .btn-loading .spinner-border {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        
+        .btn-loading span {
+            margin-left: 25px;
+        }
+    </style>
+</head>
+<body class="hold-transition sidebar-mini layout-fixed dark-mode">
+    <div class="wrapper">
+        <!-- Navbar -->
+        <nav class="main-header navbar navbar-expand navbar-white navbar-light border-bottom-0">
+            <!-- Left navbar links -->
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link" data-widget="pushmenu" href="#" role="button">
+                        <i class="fas fa-bars"></i>
+                    </a>
+                </li>
+                <li class="nav-item d-none d-sm-inline-block">
+                    <a href="/" class="nav-link text-white">На главную</a>
+                </li>
+            </ul>
+
+            <!-- Right navbar links -->
+            <ul class="navbar-nav ml-auto">
+                <!-- Notifications Dropdown Menu -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link text-white" data-toggle="dropdown" href="#">
+                        <i class="far fa-bell"></i>
+                        <span class="badge badge-warning navbar-badge" id="notificationCount">0</span>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right dark-card">
+                        <span class="dropdown-item dropdown-header">Уведомления</span>
+                        <div class="dropdown-divider border-secondary"></div>
+                        <div id="notificationsList">
+                            <a href="#" class="dropdown-item">
+                                <i class="fas fa-envelope mr-2"></i> Нет новых уведомлений
+                            </a>
+                        </div>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" data-widget="fullscreen" href="#" role="button">
+                        <i class="fas fa-expand-arrows-alt"></i>
+                    </a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link text-white" data-toggle="dropdown" href="#">
+                        <div class="user-avatar" id="userAvatarSmall">A</div>
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right dark-card">
+                        <div class="dropdown-item">
+                            <div class="media">
+                                <div class="user-avatar large mr-3" id="userAvatarLarge">A</div>
+                                <div class="media-body">
+                                    <h3 class="dropdown-item-title" id="userNameDropdown">
+                                        Администратор
+                                    </h3>
+                                    <p class="text-sm text-muted" id="userEmailDropdown">
+                                        admin@brokerok.com
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="dropdown-divider border-secondary"></div>
+                        <a href="#" class="dropdown-item" onclick="logout()">
+                            <i class="fas fa-sign-out-alt mr-2"></i> Выйти
+                        </a>
+                    </div>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Sidebar Container -->
+        <aside class="main-sidebar sidebar-dark-primary elevation-4">
+            <!-- Brand Logo -->
+            <a href="/admin_panel" class="brand-link border-bottom-0">
+                <img src="https://adminlte.io/themes/v3/dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                <span class="brand-text font-weight-light">BROKEROK</span>
+            </a>
+
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Sidebar user panel (optional) -->
+                <div class="user-panel mt-3 pb-3 mb-3 d-flex">
+                    <div class="image">
+                        <div class="user-avatar large" id="sidebarUserAvatar">A</div>
+                    </div>
+                    <div class="info">
+                        <a href="#" class="d-block text-white" id="sidebarUserName">Администратор</a>
+                        <span class="text-sm text-muted" id="sidebarUserRole">Админ</span>
+                    </div>
+                </div>
+
+                <!-- Sidebar Menu -->
+                <nav class="mt-2">
+                    <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
+                        <li class="nav-item">
+                            <a href="#dashboard" class="nav-link active" onclick="showTab('dashboard')">
+                                <i class="nav-icon fas fa-tachometer-alt"></i>
+                                <p>Дашборд</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#properties" class="nav-link" onclick="showTab('properties')">
+                                <i class="nav-icon fas fa-building"></i>
+                                <p>Недвижимость</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#users" class="nav-link" onclick="showTab('users')">
+                                <i class="nav-icon fas fa-users"></i>
+                                <p>Пользователи</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#orders" class="nav-link" onclick="showTab('orders')">
+                                <i class="nav-icon fas fa-shopping-cart"></i>
+                                <p>Заказы</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#crypto" class="nav-link" onclick="showTab('crypto')">
+                                <i class="nav-icon fas fa-wallet"></i>
+                                <p>Крипто-кошелёк</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#logs" class="nav-link" onclick="showTab('logs')">
+                                <i class="nav-icon fas fa-clipboard-list"></i>
+                                <p>Логи</p>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Content Wrapper. Contains page content -->
+        <div class="content-wrapper">
+            <!-- Content Header (Page header) -->
+            <div class="content-header">
+                <div class="container-fluid">
+                    <div class="row mb-2">
+                        <div class="col-sm-6">
+                            <h1 class="m-0 text-white" id="pageTitle">Дашборд</h1>
+                        </div>
+                        <div class="col-sm-6">
+                            <ol class="breadcrumb float-sm-right">
+                                <li class="breadcrumb-item"><a href="/admin_panel" class="text-white">Главная</a></li>
+                                <li class="breadcrumb-item active text-white" id="pageBreadcrumb">Дашборд</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main content -->
+            <div class="content">
+                <div class="container-fluid">
+                    
+                    <!-- Dashboard Tab -->
+                    <div id="dashboard-tab" class="tab-content">
+                        <div class="row">
+                            <div class="col-lg-3 col-6">
+                                <div class="small-box bg-info">
+                                    <div class="inner">
+                                        <h3 id="statsTotalProperties">0</h3>
+                                        <p>Всего объектов</p>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    <a href="#properties" onclick="showTab('properties')" class="small-box-footer">
+                                        Подробнее <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-6">
+                                <div class="small-box bg-success">
+                                    <div class="inner">
+                                        <h3 id="statsTotalUsers">0</h3>
+                                        <p>Пользователи</p>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-users"></i>
+                                    </div>
+                                    <a href="#users" onclick="showTab('users')" class="small-box-footer">
+                                        Подробнее <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-6">
+                                <div class="small-box bg-warning">
+                                    <div class="inner">
+                                        <h3 id="statsTotalRevenue">$0</h3>
+                                        <p>Общий доход</p>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-dollar-sign"></i>
+                                    </div>
+                                    <a href="#orders" onclick="showTab('orders')" class="small-box-footer">
+                                        Подробнее <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-6">
+                                <div class="small-box bg-danger">
+                                    <div class="inner">
+                                        <h3 id="statsPageViews">0</h3>
+                                        <p>Просмотры</p>
+                                    </div>
+                                    <div class="icon">
+                                        <i class="fas fa-eye"></i>
+                                    </div>
+                                    <a href="#logs" onclick="showTab('logs')" class="small-box-footer">
+                                        Подробнее <i class="fas fa-arrow-circle-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="card dark-card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Статистика за неделю</h3>
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool text-white" onclick="refreshStats()">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="chart-container">
+                                            <canvas id="mainChart"></canvas>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card dark-card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Последние действия</h3>
+                                    </div>
+                                    <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                                        <div id="recentActivity">
+                                            <div class="loading">
+                                                <i class="fas fa-spinner"></i>
+                                                <p>Загрузка...</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="card dark-card">
+                                    <div class="card-header">
+                                        <h3 class="card-title">Карта объектов</h3>
+                                        <div class="card-tools">
+                                            <button type="button" class="btn btn-tool text-white" onclick="refreshMap()">
+                                                <i class="fas fa-sync-alt"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="map-container">
+                                            <div id="adminMap"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Properties Tab -->
+                    <div id="properties-tab" class="tab-content" style="display: none;">
+                        <div class="card dark-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Управление недвижимостью</h3>
+                                <div class="card-tools">
+                                    <button class="btn btn-primary btn-sm" onclick="showAddPropertyModal()">
+                                        <i class="fas fa-plus"></i> Добавить объект
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert" id="propertyAlert" style="display: none;"></div>
+                                
+                                <div class="filter-box">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <select class="form-control" id="filterStatus" onchange="filterProperties()">
+                                                <option value="">Все статусы</option>
+                                                <option value="available">Доступно</option>
+                                                <option value="sold">Продано</option>
+                                                <option value="pending">В ожидании</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select class="form-control" id="filterCity" onchange="filterProperties()">
+                                                <option value="">Все города</option>
+                                                <option value="istanbul">Стамбул</option>
+                                                <option value="antalya">Анталья</option>
+                                                <option value="alanya">Алания</option>
+                                                <option value="bodrum">Бодрум</option>
+                                                <option value="fethiye">Фетхие</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select class="form-control" id="filterType" onchange="filterProperties()">
+                                                <option value="">Все типы</option>
+                                                <option value="apartment">Квартира</option>
+                                                <option value="house">Дом</option>
+                                                <option value="villa">Вилла</option>
+                                                <option value="commercial">Коммерческая</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="searchProperty" 
+                                                       placeholder="Поиск..." onkeyup="filterProperties()">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="filterProperties()">
+                                                        <i class="fas fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-hover dark-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Изображение</th>
+                                                <th>Название</th>
+                                                <th>Цена</th>
+                                                <th>Город</th>
+                                                <th>Тип</th>
+                                                <th>Статус</th>
+                                                <th>Действия</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="propertiesTableBody">
+                                            <tr>
+                                                <td colspan="8" class="text-center">
+                                                    <div class="loading">
+                                                        <i class="fas fa-spinner"></i>
+                                                        <p>Загрузка объектов...</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <nav aria-label="Навигация по страницам">
+                                    <ul class="pagination justify-content-center" id="propertiesPagination">
+                                        <!-- Pagination will be loaded here -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Users Tab -->
+                    <div id="users-tab" class="tab-content" style="display: none;">
+                        <div class="card dark-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Управление пользователями</h3>
+                                <div class="card-tools">
+                                    <button class="btn btn-primary btn-sm" onclick="refreshUsers()">
+                                        <i class="fas fa-sync-alt"></i> Обновить
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert" id="usersAlert" style="display: none;"></div>
+                                
+                                <div class="filter-box">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <select class="form-control" id="filterUserRole" onchange="filterUsers()">
+                                                <option value="">Все роли</option>
+                                                <option value="admin">Админ</option>
+                                                <option value="user">Пользователь</option>
+                                                <option value="manager">Менеджер</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select class="form-control" id="filterUserStatus" onchange="filterUsers()">
+                                                <option value="">Все статусы</option>
+                                                <option value="active">Активный</option>
+                                                <option value="blocked">Заблокирован</option>
+                                                <option value="pending">Ожидает</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="searchUser" 
+                                                       placeholder="Поиск по имени или email..." onkeyup="filterUsers()">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="filterUsers()">
+                                                        <i class="fas fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-hover dark-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Аватар</th>
+                                                <th>Имя</th>
+                                                <th>Email</th>
+                                                <th>Роль</th>
+                                                <th>Статус</th>
+                                                <th>Дата регистрации</th>
+                                                <th>Действия</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="usersTableBody">
+                                            <tr>
+                                                <td colspan="8" class="text-center">
+                                                    <div class="loading">
+                                                        <i class="fas fa-spinner"></i>
+                                                        <p>Загрузка пользователей...</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <nav aria-label="Навигация по страницам">
+                                    <ul class="pagination justify-content-center" id="usersPagination">
+                                        <!-- Pagination will be loaded here -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Orders Tab -->
+                    <div id="orders-tab" class="tab-content" style="display: none;">
+                        <div class="card dark-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Управление заказами</h3>
+                                <div class="card-tools">
+                                    <button class="btn btn-primary btn-sm" onclick="refreshOrders()">
+                                        <i class="fas fa-sync-alt"></i> Обновить
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert" id="ordersAlert" style="display: none;"></div>
+                                
+                                <div class="filter-box">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <select class="form-control" id="filterOrderStatus" onchange="filterOrders()">
+                                                <option value="">Все статусы</option>
+                                                <option value="pending">В ожидании</option>
+                                                <option value="processing">В обработке</option>
+                                                <option value="completed">Завершен</option>
+                                                <option value="cancelled">Отменен</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select class="form-control" id="filterOrderType" onchange="filterOrders()">
+                                                <option value="">Все типы</option>
+                                                <option value="crypto">Крипто</option>
+                                                <option value="traditional">Традиционный</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="date" class="form-control" id="filterOrderDate" onchange="filterOrders()">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="searchOrder" 
+                                                       placeholder="Поиск..." onkeyup="filterOrders()">
+                                                <div class="input-group-append">
+                                                    <button class="btn btn-outline-secondary" type="button" onclick="filterOrders()">
+                                                        <i class="fas fa-search"></i>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table table-hover dark-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Клиент</th>
+                                                <th>Объект</th>
+                                                <th>Сумма</th>
+                                                <th>Тип оплаты</th>
+                                                <th>Статус</th>
+                                                <th>Дата создания</th>
+                                                <th>Действия</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="ordersTableBody">
+                                            <tr>
+                                                <td colspan="8" class="text-center">
+                                                    <div class="loading">
+                                                        <i class="fas fa-spinner"></i>
+                                                        <p>Загрузка заказов...</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <nav aria-label="Навигация по страницам">
+                                    <ul class="pagination justify-content-center" id="ordersPagination">
+                                        <!-- Pagination will be loaded here -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Crypto Wallet Tab -->
+                    <div id="crypto-tab" class="tab-content" style="display: none;">
+                        <div class="card dark-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Настройки крипто-кошелька</h3>
+                                <div class="card-tools">
+                                    <button class="btn btn-primary btn-sm" onclick="showCryptoSettingsModal()">
+                                        <i class="fas fa-cog"></i> Настроить
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="alert" id="cryptoAlert" style="display: none;"></div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="card bg-dark mb-3">
+                                            <div class="card-header">
+                                                <h4 class="card-title mb-0">Информация о кошельке</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row mb-2">
+                                                    <div class="col-6"><strong>Адрес кошелька:</strong></div>
+                                                    <div class="col-6">
+                                                        <code id="cryptoWalletAddress">Не настроено</code>
+                                                        <button class="btn btn-sm btn-info ml-2" onclick="copyCryptoAddress()">
+                                                            <i class="fas fa-copy"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-6"><strong>Сеть:</strong></div>
+                                                    <div class="col-6"><span id="cryptoNetwork">Не настроено</span></div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-6"><strong>Криптовалюта:</strong></div>
+                                                    <div class="col-6"><span id="cryptoCurrency">Не настроено</span></div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-6"><strong>Статус:</strong></div>
+                                                    <div class="col-6">
+                                                        <span id="cryptoStatus" class="badge badge-secondary">Не настроено</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <div class="card bg-dark">
+                                            <div class="card-header">
+                                                <h4 class="card-title mb-0">Статистика платежей</h4>
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="row mb-2">
+                                                    <div class="col-6"><strong>Всего транзакций:</strong></div>
+                                                    <div class="col-6"><span id="totalCryptoTransactions">0</span></div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-6"><strong>Общая сумма:</strong></div>
+                                                    <div class="col-6"><span id="totalCryptoAmount">$0</span></div>
+                                                </div>
+                                                <div class="row mb-2">
+                                                    <div class="col-6"><strong>Успешные:</strong></div>
+                                                    <div class="col-6"><span id="successfulCryptoPayments">0</span></div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-6"><strong>Ожидают:</strong></div>
+                                                    <div class="col-6"><span id="pendingCryptoPayments">0</span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <h4 class="mt-4 mb-3">Последние транзакции</h4>
+                                <div class="table-responsive">
+                                    <table class="table table-hover dark-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Сумма</th>
+                                                <th>Валюта</th>
+                                                <th>TX Hash</th>
+                                                <th>Статус</th>
+                                                <th>Дата</th>
+                                                <th>Клиент</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="cryptoTransactionsBody">
+                                            <tr>
+                                                <td colspan="7" class="text-center">
+                                                    <div class="text-muted py-3">
+                                                        <i class="fas fa-coins fa-2x mb-3"></i>
+                                                        <p>Нет транзакций</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Logs Tab -->
+                    <div id="logs-tab" class="tab-content" style="display: none;">
+                        <div class="card dark-card">
+                            <div class="card-header">
+                                <h3 class="card-title">Логи системы</h3>
+                                <div class="card-tools">
+                                    <div class="input-group input-group-sm" style="width: 150px;">
+                                        <input type="text" class="form-control" id="searchLog" 
+                                               placeholder="Поиск..." onkeyup="filterLogs()">
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="filterLogs()">
+                                                <i class="fas fa-search"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="filter-box">
+                                    <div class="row">
+                                        <div class="col-md-3">
+                                            <select class="form-control" id="filterLogLevel" onchange="filterLogs()">
+                                                <option value="">Все уровни</option>
+                                                <option value="info">Информация</option>
+                                                <option value="warning">Предупреждение</option>
+                                                <option value="error">Ошибка</option>
+                                                <option value="security">Безопасность</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <select class="form-control" id="filterLogType" onchange="filterLogs()">
+                                                <option value="">Все типы</option>
+                                                <option value="auth">Аутентификация</option>
+                                                <option value="property">Недвижимость</option>
+                                                <option value="user">Пользователь</option>
+                                                <option value="order">Заказ</option>
+                                                <option value="system">Система</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <input type="date" class="form-control" id="filterLogDate" onchange="filterLogs()">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <button class="btn btn-warning btn-block" onclick="exportLogs()">
+                                                <i class="fas fa-download"></i> Экспорт логов
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="table-responsive" style="max-height: 600px; overflow-y: auto;">
+                                    <table class="table table-hover dark-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Дата и время</th>
+                                                <th>Уровень</th>
+                                                <th>Тип</th>
+                                                <th>Пользователь</th>
+                                                <th>Действие</th>
+                                                <th>Детали</th>
+                                                <th>IP</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="logsTableBody">
+                                            <tr>
+                                                <td colspan="8" class="text-center">
+                                                    <div class="loading">
+                                                        <i class="fas fa-spinner"></i>
+                                                        <p>Загрузка логов...</p>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                
+                                <nav aria-label="Навигация по страницам">
+                                    <ul class="pagination justify-content-center" id="logsPagination">
+                                        <!-- Pagination will be loaded here -->
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="main-footer">
+            <strong>Copyright &copy; 2024 <a href="/">BROKEROK</a>.</strong>
+            Все права защищены.
+            <div class="float-right d-none d-sm-inline-block">
+                <b>Версия</b> 2.0.0
+            </div>
+        </footer>
+    </div>
+
+    <!-- Modals -->
+    
+    <!-- Add Property Modal -->
+    <div class="modal fade" id="addPropertyModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content dark-card">
+                <div class="modal-header">
+                    <h5 class="modal-title">Добавить новый объект</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert" id="propertyFormAlert" style="display: none;"></div>
+                    <form id="propertyForm" onsubmit="return false;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Название *</label>
+                                    <input type="text" class="form-control" id="propertyTitle" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Цена ($) *</label>
+                                    <input type="number" class="form-control" id="propertyPrice" required min="0" step="1000">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Тип недвижимости *</label>
+                                    <select class="form-control" id="propertyType" required>
+                                        <option value="">Выберите тип</option>
+                                        <option value="apartment">Квартира</option>
+                                        <option value="house">Дом</option>
+                                        <option value="villa">Вилла</option>
+                                        <option value="commercial">Коммерческая</option>
+                                        <option value="land">Земля</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Тип сделки *</label>
+                                    <select class="form-control" id="dealType" required>
+                                        <option value="">Выберите тип сделки</option>
+                                        <option value="sale">Продажа</option>
+                                        <option value="rent">Аренда</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Город *</label>
+                                    <select class="form-control" id="propertyCity" required>
+                                        <option value="">Выберите город</option>
+                                        <option value="istanbul">Стамбул</option>
+                                        <option value="antalya">Анталья</option>
+                                        <option value="alanya">Алания</option>
+                                        <option value="bodrum">Бодрум</option>
+                                        <option value="fethiye">Фетхие</option>
+                                        <option value="izmir">Измир</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>Район *</label>
+                                    <input type="text" class="form-control" id="propertyDistrict" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Описание</label>
+                            <textarea class="form-control" id="propertyDescription" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Комнаты</label>
+                                    <input type="text" class="form-control" id="propertyRooms" placeholder="3+1">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Площадь (м²)</label>
+                                    <input type="number" class="form-control" id="propertyArea" min="0">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Этаж</label>
+                                    <input type="number" class="form-control" id="propertyFloor" min="0">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Upload Images Section -->
+                        <div class="form-group">
+                            <label>Изображения (опционально, можно загрузить позже)</label>
+                            <div class="upload-area" onclick="document.getElementById('imageUpload').click()" id="uploadArea">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <p>Нажмите для загрузки изображений</p>
+                                <small>Поддерживаются JPG, PNG, GIF, WEBP (макс. 5MB)</small>
+                            </div>
+                            <input type="file" id="imageUpload" multiple accept="image/*" style="display: none;" 
+                                onchange="handleImageUpload(event)">
+                            
+                            <div class="image-preview" id="imagePreview">
+                                <!-- Preview images will be added here -->
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Удобства (через запятую)</label>
+                            <textarea class="form-control" id="propertyAmenities" rows="2" 
+                                      placeholder="wifi, parking, pool, gym"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" id="savePropertyBtn" onclick="saveNewProperty()">
+                        Сохранить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Property Modal -->
+    <div class="modal fade" id="editPropertyModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content dark-card">
+                <div class="modal-header">
+                    <h5 class="modal-title">Редактировать объект</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert" id="editPropertyFormAlert" style="display: none;"></div>
+                    <form id="editPropertyForm">
+                        <input type="hidden" id="editPropertyIdInput">
+                        <div class="form-group">
+                            <label>Название *</label>
+                            <input type="text" class="form-control" id="editPropertyTitle" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Цена ($) *</label>
+                            <input type="number" class="form-control" id="editPropertyPrice" required min="0">
+                        </div>
+                        <div class="form-group">
+                            <label>Статус *</label>
+                            <select class="form-control" id="editPropertyStatus" required>
+                                <option value="available">Доступно</option>
+                                <option value="sold">Продано</option>
+                                <option value="pending">В ожидании</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Описание</label>
+                            <textarea class="form-control" id="editPropertyDescription" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" id="updatePropertyBtn" onclick="updateProperty()">
+                        Обновить
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Crypto Settings Modal -->
+    <div class="modal fade" id="cryptoSettingsModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content dark-card">
+                <div class="modal-header">
+                    <h5 class="modal-title">Настройки крипто-кошелька</h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert" id="cryptoSettingsAlert" style="display: none;"></div>
+                    <form id="cryptoSettingsForm">
+                        <div class="form-group">
+                            <label>Адрес кошелька *</label>
+                            <input type="text" class="form-control" id="cryptoWalletAddressInput" required
+                                   placeholder="0x0000000000000000000000000000000000000000">
+                        </div>
+                        <div class="form-group">
+                            <label>Сеть *</label>
+                            <select class="form-control" id="cryptoNetworkInput" required>
+                                <option value="">Выберите сеть</option>
+                                <option value="ERC-20">ERC-20 (Ethereum)</option>
+                                <option value="BEP-20">BEP-20 (Binance Smart Chain)</option>
+                                <option value="TRC-20">TRC-20 (Tron)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Криптовалюта *</label>
+                            <select class="form-control" id="cryptoCurrencyInput" required>
+                                <option value="">Выберите валюту</option>
+                                <option value="USDT">USDT</option>
+                                <option value="USDC">USDC</option>
+                                <option value="ETH">ETH</option>
+                                <option value="BNB">BNB</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Примечание</label>
+                            <textarea class="form-control" id="cryptoNotes" rows="2"
+                                      placeholder="Дополнительная информация о кошельке"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Отмена</button>
+                    <button type="button" class="btn btn-primary" onclick="saveCryptoSettings()">
+                        Сохранить настройки
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/admin-lte@3.2/dist/js/adminlte.min.js"></script>
+    
+    <script>
+        // Глобальные переменные
+        let currentUser = null;
+        let properties = [];
+        let filteredProperties = [];
+        let users = [];
+        let filteredUsers = [];
+        let orders = [];
+        let filteredOrders = [];
+        let logs = [];
+        let filteredLogs = [];
+        let map = null;
+        let markers = [];
+        let mainChart = null;
+        let currentPropertyId = null;
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let uploadedImages = [];
+
+        // Инициализация при загрузке страницы
+        $(document).ready(function() {
+            console.log('Загрузка админ-панели...');
+            checkAuth();
+            
+            // Проверка сессии каждые 5 минут
+            setInterval(checkSession, 300000);
+        });
+
+        // Проверка аутентификации
+        async function checkAuth() {
+            console.log('Проверка аутентификации...');
+            const token = localStorage.getItem('admin_token');
+            if (!token) {
+                console.log('Токен не найден, перенаправление на страницу входа');
+                window.location.href = '/admin';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/check-session', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    console.error('Ошибка проверки сессии:', response.status);
+                    localStorage.removeItem('admin_token');
+                    window.location.href = '/admin';
+                    return;
+                }
+
+                const result = await response.json();
+                
+                console.log('Результат проверки авторизации:', result);
+                
+                if (result.valid && result.user && result.user.role === 'admin') {
+                    currentUser = result.user;
+                    updateUserInfo();
+                    loadInitialData();
+                } else {
+                    console.log('Недействительная сессия, удаляем токен');
+                    localStorage.removeItem('admin_token');
+                    window.location.href = '/admin';
+                }
+            } catch (error) {
+                console.error('Auth error:', error);
+                localStorage.removeItem('admin_token');
+                window.location.href = '/admin';
+            }
+        }
+
+        // Проверка сессии
+        async function checkSession() {
+            const token = localStorage.getItem('admin_token');
+            if (!token) return;
+
+            try {
+                const response = await fetch('/api/check-session', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    localStorage.removeItem('admin_token');
+                    window.location.href = '/admin';
+                    return;
+                }
+            } catch (error) {
+                console.error('Session check error:', error);
+            }
+        }
+
+        // Обновление информации о пользователе
+        function updateUserInfo() {
+            $('#userNameDropdown').text(currentUser.name || 'Администратор');
+            $('#userEmailDropdown').text(currentUser.email || 'admin@brokerok.com');
+            $('#sidebarUserName').text(currentUser.name || 'Администратор');
+            $('#sidebarUserRole').text(currentUser.role === 'admin' ? 'Администратор' : currentUser.role);
+            
+            const avatarText = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'A';
+            $('#userAvatarSmall').text(avatarText);
+            $('#userAvatarLarge').text(avatarText);
+            $('#sidebarUserAvatar').text(avatarText);
+        }
+
+        // Загрузка начальных данных
+        async function loadInitialData() {
+            await loadStats();
+            await loadRecentActivity();
+            await loadProperties();
+            initializeMap();
+        }
+
+        // Инициализация карты
+        function initializeMap() {
+            try {
+                const mapElement = document.getElementById('adminMap');
+                if (!mapElement) {
+                    console.error('Элемент карты не найден');
+                    setTimeout(initializeMap, 500);
+                    return;
+                }
+                
+                // Устанавливаем минимальные размеры для карты
+                mapElement.style.minHeight = '500px';
+                mapElement.style.height = '500px';
+                
+                // Если карта уже инициализирована, удаляем ее
+                if (map) {
+                    map.remove();
+                    map = null;
+                }
+                
+                // Инициализируем карту с центром в Турции
+                map = L.map('adminMap').setView([39.9334, 32.8597], 6);
+                
+                // Добавляем темную тему для карты
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '© OpenStreetMap, © CartoDB',
+                    maxZoom: 18,
+                    minZoom: 4,
+                    subdomains: 'abcd'
+                }).addTo(map);
+                
+                console.log('Карта успешно инициализирована');
+                
+                // Загружаем данные для карты
+                loadMapData();
+                
+            } catch (error) {
+                console.error('Ошибка инициализации карты:', error);
+                // Показываем сообщение об ошибке
+                const mapContainer = document.getElementById('adminMap');
+                if (mapContainer) {
+                    mapContainer.innerHTML = `
+                        <div style="display: flex; align-items: center; justify-content: center; height: 500px; background: #2d2d2d;">
+                            <div class="text-center">
+                                <i class="fas fa-exclamation-triangle fa-3x text-warning mb-3"></i>
+                                <p class="text-muted">Ошибка загрузки карты</p>
+                                <button class="btn btn-sm btn-primary mt-2" onclick="initializeMap()">
+                                    <i class="fas fa-redo"></i> Попробовать снова
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+        }
+
+        // Показать вкладку
+        function showTab(tabName) {
+            $('.tab-content').hide();
+            $(`#${tabName}-tab`).show();
+            $('.nav-link').removeClass('active');
+            $(`a[href="#${tabName}"]`).addClass('active');
+            
+            // Обновление заголовка и хлебных крошек
+            const titles = {
+                'dashboard': 'Дашборд',
+                'properties': 'Недвижимость',
+                'users': 'Пользователи',
+                'orders': 'Заказы',
+                'crypto': 'Крипто-кошелёк',
+                'logs': 'Логи'
+            };
+            
+            $('#pageTitle').text(titles[tabName]);
+            $('#pageBreadcrumb').text(titles[tabName]);
+
+            // Загрузка данных для вкладки
+            switch(tabName) {
+                case 'dashboard':
+                    loadStats();
+                    loadRecentActivity();
+                    if (!map) {
+                        initializeMap();
+                    } else {
+                        loadMapData();
+                    }
+                    break;
+                case 'properties':
+                    loadProperties();
+                    break;
+                case 'users':
+                    loadUsers();
+                    break;
+                case 'orders':
+                    loadOrders();
+                    break;
+                case 'crypto':
+                    loadCryptoWallet();
+                    break;
+                case 'logs':
+                    loadAuditLogs();
+                    break;
+            }
+        }
+
+        // Выход из системы
+        function logout() {
+            if (confirm('Вы уверены, что хотите выйти?')) {
+                localStorage.removeItem('admin_token');
+                window.location.href = '/admin';
+            }
+        }
+
+        // Загрузка статистики
+        async function loadStats() {
+            try {
+                const token = localStorage.getItem('admin_token');
+                const response = await fetch('/api/admin/stats', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const stats = await response.json();
+                    updateStatsDisplay(stats);
+                    updateMainChart(stats.week_stats || []);
+                } else {
+                    console.error('Ошибка загрузки статистики:', response.status);
+                    updateStatsDisplay({
+                        properties: { total: 0 },
+                        users: { total: 0 },
+                        orders: { revenue: 0 },
+                        views: { total: 0 }
+                    });
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+                updateStatsDisplay({
+                    properties: { total: 0 },
+                    users: { total: 0 },
+                    orders: { revenue: 0 },
+                    views: { total: 0 }
+                });
+            }
+        }
+
+        // Обновление отображения статистики
+        function updateStatsDisplay(stats) {
+            $('#statsTotalProperties').text(stats.properties?.total || 0);
+            $('#statsTotalUsers').text(stats.users?.total || 0);
+            $('#statsTotalRevenue').text('$' + (stats.orders?.revenue || 0).toLocaleString());
+            $('#statsPageViews').text(stats.views?.total || 0);
+        }
+
+        // Обновление главного графика
+        function updateMainChart(weekStats) {
+            const ctx = document.getElementById('mainChart');
+            if (!ctx) return;
+            
+            if (mainChart) {
+                mainChart.destroy();
+            }
+
+            // Если нет данных, создаем пустой график
+            if (!weekStats || weekStats.length === 0) {
+                weekStats = [
+                    { date: '2024-01-01', properties: 0, users: 0, revenue: 0 },
+                    { date: '2024-01-02', properties: 0, users: 0, revenue: 0 },
+                    { date: '2024-01-03', properties: 0, users: 0, revenue: 0 },
+                    { date: '2024-01-04', properties: 0, users: 0, revenue: 0 },
+                    { date: '2024-01-05', properties: 0, users: 0, revenue: 0 },
+                    { date: '2024-01-06', properties: 0, users: 0, revenue: 0 },
+                    { date: '2024-01-07', properties: 0, users: 0, revenue: 0 }
+                ];
+            }
+            
+            const dates = weekStats.map(stat => {
+                const [year, month, day] = stat.date.split('-');
+                return `${day}.${month}`;
+            });
+            
+            const propertiesData = weekStats.map(stat => stat.properties || 0);
+            const usersData = weekStats.map(stat => stat.users || 0);
+            const revenueData = weekStats.map(stat => stat.revenue || 0);
+
+            // Темные цвета для графика
+            const gridColor = '#2d2d2d';
+            const textColor = '#adb5bd';
+            
+            mainChart = new Chart(ctx.getContext('2d'), {
+                type: 'line',
+                data: {
+                    labels: dates,
+                    datasets: [
+                        {
+                            label: 'Объекты',
+                            data: propertiesData,
+                            borderColor: '#0d6efd',
+                            backgroundColor: 'rgba(13, 110, 253, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Пользователи',
+                            data: usersData,
+                            borderColor: '#198754',
+                            backgroundColor: 'rgba(25, 135, 84, 0.1)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Доход ($)',
+                            data: revenueData,
+                            borderColor: '#ffc107',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            yAxisID: 'y1'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Количество',
+                                color: textColor
+                            },
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        y1: {
+                            position: 'right',
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Доход ($)',
+                                color: textColor
+                            },
+                            grid: {
+                                color: gridColor,
+                                drawOnChartArea: false
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: gridColor
+                            },
+                            ticks: {
+                                color: textColor
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: textColor
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Загрузка последних действий
+        async function loadRecentActivity() {
+            try {
+                const token = localStorage.getItem('admin_token');
+                const response = await fetch('/api/admin/logs?limit=10', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const logs = result.logs || [];
+                    updateRecentActivity(logs);
+                } else {
+                    console.error('Ошибка загрузки последних действий:', response.status);
+                    updateRecentActivity([]);
+                }
+            } catch (error) {
+                console.error('Error loading recent activity:', error);
+                updateRecentActivity([]);
+            }
+        }
+
+        // Обновление списка последних действий
+        function updateRecentActivity(logs) {
+            const container = $('#recentActivity');
+            
+            if (!logs || logs.length === 0) {
+                container.html('<div class="text-center text-muted py-4">Нет недавних действий</div>');
+                return;
+            }
+
+            let html = '';
+            logs.forEach(log => {
+                const time = new Date(log.created_at || Date.now()).toLocaleString('ru-RU', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    day: '2-digit',
+                    month: '2-digit'
+                });
+
+                let actionText = '';
+                let icon = 'fa-info-circle';
+                
+                switch(log.action) {
+                    case 'property_created':
+                        actionText = 'создал объект';
+                        icon = 'fa-plus-circle';
+                        break;
+                    case 'property_updated':
+                        actionText = 'обновил объект';
+                        icon = 'fa-edit';
+                        break;
+                    case 'property_deleted':
+                        actionText = 'удалил объект';
+                        icon = 'fa-trash';
+                        break;
+                    case 'user_role_updated':
+                        actionText = 'изменил роль пользователя';
+                        icon = 'fa-user-cog';
+                        break;
+                    default:
+                        actionText = log.action || 'действие';
+                }
+
+                html += `
+                    <div class="activity-item mb-3 pb-3 border-bottom border-secondary">
+                        <div class="d-flex align-items-start">
+                            <i class="fas ${icon} mr-2 mt-1 text-primary"></i>
+                            <div class="flex-grow-1">
+                                <strong class="text-white">${log.admin_name || 'Система'}</strong> <span class="text-muted">${actionText}</span>
+                                <div class="text-sm text-muted mt-1">${log.details || ''}</div>
+                                <div class="activity-time text-sm text-muted">${time}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.html(html);
+        }
+
+        // Загрузка данных для карты
+        async function loadMapData() {
+            try {
+                const token = localStorage.getItem('admin_token');
+                const response = await fetch('/api/admin/map-data', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const mapData = await response.json();
+                    updateMap(mapData);
+                } else {
+                    console.error('Ошибка загрузки данных карты:', response.status);
+                    // Используем данные из properties, если они уже загружены
+                    if (properties.length > 0) {
+                        updateMap(convertPropertiesToMapData(properties));
+                    } else {
+                        updateMap([]);
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading map data:', error);
+                updateMap([]);
+            }
+        }
+
+        // Конвертация properties в данные для карты
+        function convertPropertiesToMapData(properties) {
+            const cityCoords = {
+                'istanbul': { lat: 41.0082, lng: 28.9784 },
+                'antalya': { lat: 36.8969, lng: 30.7133 },
+                'alanya': { lat: 36.5438, lng: 31.9998 },
+                'bodrum': { lat: 37.0344, lng: 27.4305 },
+                'fethiye': { lat: 36.6217, lng: 29.1164 },
+                'izmir': { lat: 38.4237, lng: 27.1428 },
+                'ankara': { lat: 39.9334, lng: 32.8597 },
+                'kemer': { lat: 36.6000, lng: 30.5667 },
+                'side': { lat: 36.7667, lng: 31.3889 },
+                'belek': { lat: 36.8667, lng: 31.0500 }
+            };
+            
+            return properties.map(property => {
+                let lat, lng;
+                
+                // Если есть координаты в базе, используем их
+                if (property.latitude && property.longitude) {
+                    lat = property.latitude;
+                    lng = property.longitude;
+                } else {
+                    // Иначе берем координаты города
+                    const cityLower = property.city.toLowerCase();
+                    if (cityCoords[cityLower]) {
+                        lat = cityCoords[cityLower].lat;
+                        lng = cityCoords[cityLower].lng;
+                    } else {
+                        // Или координаты по умолчанию (Турция)
+                        lat = 39.9334;
+                        lng = 32.8597;
+                    }
+                }
+                
+                return {
+                    id: property.id,
+                    title: property.title,
+                    price: property.price,
+                    city: property.city,
+                    district: property.district,
+                    lat: lat,
+                    lng: lng,
+                    status: property.status || 'available'
+                };
+            });
+        }
+
+        // Обновление карты
+        function updateMap(mapData) {
+            try {
+                // Очищаем существующие маркеры
+                if (markers && markers.length > 0) {
+                    markers.forEach(marker => map.removeLayer(marker));
+                }
+                markers = [];
+
+                if (!mapData || mapData.length === 0) {
+                    // Показываем сообщение, если нет данных
+                    if (map) {
+                        L.popup()
+                            .setLatLng([39.9334, 32.8597])
+                            .setContent('Нет объектов для отображения на карте')
+                            .openOn(map);
+                    }
+                    return;
+                }
+
+                // Добавляем новые маркеры
+                mapData.forEach(property => {
+                    try {
+                        const iconColor = property.status === 'sold' ? '#dc3545' : 
+                                        property.status === 'pending' ? '#ffc107' : '#198754';
+
+                        const icon = L.divIcon({
+                            html: `
+                                <div style="
+                                    background-color: ${iconColor};
+                                    width: 24px;
+                                    height: 24px;
+                                    border-radius: 50%;
+                                    border: 2px solid white;
+                                    box-shadow: 0 0 5px rgba(0,0,0,0.5);
+                                    cursor: pointer;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    color: white;
+                                    font-size: 12px;
+                                    font-weight: bold;
+                                " title="${property.title}">$</div>
+                            `,
+                            iconSize: [24, 24],
+                            className: 'property-marker'
+                        });
+
+                        const marker = L.marker([property.lat, property.lng], { icon })
+                            .addTo(map)
+                            .bindPopup(`
+                                <div style="max-width: 250px; color: #333;">
+                                    <div style="font-weight: bold; font-size: 14px; margin-bottom: 5px; color: #000;">${property.title || 'Объект'}</div>
+                                    <div style="color: #28a745; font-size: 16px; font-weight: bold;">$${(property.price || 0).toLocaleString()}</div>
+                                    <div>${property.city || ''}, ${property.district || ''}</div>
+                                    <div style="margin-top: 5px;">
+                                        <span class="badge ${property.status === 'available' ? 'badge-success' : property.status === 'sold' ? 'badge-danger' : 'badge-warning'}"
+                                              style="font-size: 11px; padding: 2px 8px;">
+                                            ${property.status === 'available' ? 'Доступно' : property.status === 'sold' ? 'Продано' : 'В ожидании'}
+                                        </span>
+                                    </div>
+                                    <button onclick="viewProperty(${property.id})" 
+                                            style="margin-top: 10px; padding: 5px 10px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px; width: 100%;">
+                                        <i class="fas fa-eye"></i> Просмотр
+                                    </button>
+                                </div>
+                            `);
+
+                        markers.push(marker);
+                    } catch (error) {
+                        console.error('Ошибка добавления маркера:', error, property);
+                    }
+                });
+
+                // Масштабируем карту, чтобы показать все маркеры
+                if (markers.length > 0 && map) {
+                    const group = L.featureGroup(markers);
+                    map.fitBounds(group.getBounds().pad(0.1));
+                }
+                
+                console.log(`Добавлено ${markers.length} маркеров на карту`);
+            } catch (error) {
+                console.error('Ошибка обновления карты:', error);
+            }
+        }
+
+        // Обновить статистику
+        function refreshStats() {
+            loadStats();
+            loadRecentActivity();
+            showAlert('success', 'Статистика обновлена', 'propertyAlert');
+        }
+
+        // Обновить карту
+        function refreshMap() {
+            loadMapData();
+            showAlert('info', 'Карта обновляется...', 'propertyAlert');
+        }
+
+        // Загрузка объектов недвижимости
+        async function loadProperties() {
+            try {
+                const token = localStorage.getItem('admin_token');
+                const response = await fetch('/api/admin/properties?limit=1000', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    properties = result.properties || [];
+                    filteredProperties = [...properties];
+                    currentPage = 1;
+                    updatePropertiesTable();
+                    
+                    // Если карта открыта, обновляем ее
+                    if (map && $('#dashboard-tab').is(':visible')) {
+                        updateMap(convertPropertiesToMapData(properties));
+                    }
+                } else {
+                    console.error('Ошибка загрузки объектов:', response.status);
+                    showAlert('error', 'Ошибка загрузки объектов', 'propertyAlert');
+                }
+            } catch (error) {
+                console.error('Error loading properties:', error);
+                showAlert('error', 'Ошибка загрузки объектов', 'propertyAlert');
+            }
+        }
+
+        // Фильтрация объектов
+        function filterProperties() {
+            const status = $('#filterStatus').val();
+            const city = $('#filterCity').val();
+            const type = $('#filterType').val();
+            const search = $('#searchProperty').val().toLowerCase();
+
+            filteredProperties = properties.filter(property => {
+                let matches = true;
+
+                if (status && property.status !== status) matches = false;
+                if (city && property.city !== city) matches = false;
+                if (type && property.property_type !== type) matches = false;
+                if (search && !property.title.toLowerCase().includes(search)) matches = false;
+
+                return matches;
+            });
+
+            currentPage = 1;
+            updatePropertiesTable();
+        }
+
+        // Обновление таблицы объектов
+        function updatePropertiesTable() {
+            const tbody = $('#propertiesTableBody');
+            const pagination = $('#propertiesPagination');
+            
+            if (!filteredProperties || filteredProperties.length === 0) {
+                tbody.html(`
+                    <tr>
+                        <td colspan="8" class="text-center">
+                            <div class="text-muted py-4">
+                                <i class="fas fa-building fa-2x mb-3"></i>
+                                <p>Объекты не найдены</p>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+                pagination.empty();
+                return;
+            }
+
+            // Пагинация
+            const totalPages = Math.ceil(filteredProperties.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageProperties = filteredProperties.slice(startIndex, endIndex);
+
+            // Обновление пагинации
+            let paginationHtml = '';
+            if (totalPages > 1) {
+                paginationHtml = `
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changePropertyPage(${currentPage - 1})">Назад</a>
+                    </li>
+                `;
+
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                        paginationHtml += `
+                            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                                <a class="page-link" href="#" onclick="changePropertyPage(${i})">${i}</a>
+                            </li>
+                        `;
+                    } else if (i === currentPage - 3 || i === currentPage + 3) {
+                        paginationHtml += `<li class="page-item disabled"><a class="page-link" href="#">...</a></li>`;
+                    }
+                }
+
+                paginationHtml += `
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changePropertyPage(${currentPage + 1})">Вперед</a>
+                    </li>
+                `;
+            }
+
+            pagination.html(paginationHtml);
+
+            // Обновление таблицы
+            let html = '';
+            pageProperties.forEach(property => {
+                // Создаем placeholder для изображений
+                const firstImage = property.images && property.images.length > 0 && property.images[0] 
+                    ? property.images[0] 
+                    : createPropertyPlaceholder(property.title);
+                
+                const statusText = {
+                    'available': 'Доступно',
+                    'sold': 'Продано',
+                    'pending': 'В ожидании'
+                };
+                
+                const statusClass = {
+                    'available': 'badge-success',
+                    'sold': 'badge-danger',
+                    'pending': 'badge-warning'
+                };
+                
+                const typeText = {
+                    'apartment': 'Квартира',
+                    'house': 'Дом',
+                    'villa': 'Вилла',
+                    'commercial': 'Коммерческая',
+                    'land': 'Земля'
+                };
+
+                html += `
+                    <tr>
+                        <td>${property.id}</td>
+                        <td>
+                            <img src="${firstImage}" alt="${property.title}" 
+                                 style="width: 60px; height: 60px; object-fit: cover; border-radius: 5px;"
+                                 onerror="this.onerror=null; this.src='${createPropertyPlaceholder(property.title)}'">
+                        </td>
+                        <td>
+                            <strong>${property.title}</strong>
+                            ${property.description ? `<div class="text-sm text-muted">${property.description.substring(0, 50)}...</div>` : ''}
+                        </td>
+                        <td>
+                            <strong class="text-success">$${(property.price || 0).toLocaleString()}</strong>
+                            <div class="text-sm text-muted">${property.deal_type === 'rent' ? 'аренда' : 'продажа'}</div>
+                        </td>
+                        <td>
+                            <div>${property.city}</div>
+                            <div class="text-sm text-muted">${property.district}</div>
+                        </td>
+                        <td>
+                            <span class="badge ${typeText[property.property_type] ? 'badge-secondary' : 'badge-secondary'}">
+                                ${typeText[property.property_type] || property.property_type}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge ${statusClass[property.status] || 'badge-success'}">
+                                ${statusText[property.status] || 'Доступно'}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="d-flex">
+                                <button class="btn btn-info btn-sm mr-1" title="Просмотр" onclick="viewProperty(${property.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-warning btn-sm mr-1" title="Редактировать" onclick="editProperty(${property.id})">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" title="Удалить" onclick="deleteProperty(${property.id})">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.html(html);
+        }
+
+        // Создание placeholder для изображения
+        function createPropertyPlaceholder(title) {
+            const colors = ['3b82f6', '10b981', 'f59e0b', 'ef4444', '8b5cf6'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            const shortTitle = title ? title.substring(0, 10) : 'Объект';
+            
+            return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(`
+                <svg width="60" height="60" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="100%" height="100%" fill="#${color}"/>
+                    <text x="50%" y="50%" font-family="Arial, sans-serif" 
+                          font-size="10" fill="white" text-anchor="middle" 
+                          dy=".3em">${shortTitle}</text>
+                </svg>
+            `)}`;
+        }
+
+        // Изменение страницы для объектов
+        function changePropertyPage(page) {
+            currentPage = page;
+            updatePropertiesTable();
+        }
+
+        // Просмотр объекта
+        async function viewProperty(propertyId) {
+            try {
+                const token = localStorage.getItem('admin_token');
+                const response = await fetch(`/api/admin/properties/${propertyId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const property = await response.json();
+                    currentPropertyId = propertyId;
+                    
+                    let imagesHtml = '';
+                    if (property.images && Array.isArray(property.images) && property.images.length > 0) {
+                        imagesHtml = `
+                            <div class="property-images mb-3">
+                                <h5>Изображения:</h5>
+                                <div class="d-flex flex-wrap">
+                                    ${property.images.map(img => `
+                                        <img src="${img}" alt="Изображение объекта" class="img-thumbnail mr-2 mb-2" style="width: 100px; height: 100px; object-fit: cover;">
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        imagesHtml = `
+                            <div class="property-images mb-3">
+                                <h5>Изображения:</h5>
+                                <div class="d-flex flex-wrap">
+                                    <div class="text-muted">
+                                        <i class="fas fa-image fa-2x"></i>
+                                        <p>Нет изображений</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                    
+                    const html = `
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h4>${property.title}</h4>
+                                <p><strong>Цена:</strong> $${property.price.toLocaleString()}</p>
+                                <p><strong>Город:</strong> ${property.city}</p>
+                                <p><strong>Район:</strong> ${property.district}</p>
+                                <p><strong>Тип:</strong> ${property.property_type}</p>
+                                <p><strong>Тип сделки:</strong> ${property.deal_type}</p>
+                                <p><strong>Статус:</strong> <span class="badge ${property.status === 'available' ? 'badge-success' : property.status === 'sold' ? 'badge-danger' : 'badge-warning'}">${property.status}</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                ${imagesHtml}
+                                <p><strong>Площадь:</strong> ${property.area || 'Не указано'} м²</p>
+                                <p><strong>Комнаты:</strong> ${property.rooms || 'Не указано'}</p>
+                                <p><strong>Этаж:</strong> ${property.floor || 'Не указано'}</p>
+                                <p><strong>Год постройки:</strong> ${property.year_built || 'Не указано'}</p>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-12">
+                                <h5>Описание:</h5>
+                                <p>${property.description || 'Нет описания'}</p>
+                                <h5>Удобства:</h5>
+                                <p>${property.amenities ? property.amenities.join(', ') : 'Нет удобств'}</p>
+                            </div>
+                        </div>
+                    `;
+                    
+                    $('#propertyViewContent').html(html);
+                    $('#viewPropertyModal').modal('show');
+                } else {
+                    showAlert('error', 'Ошибка загрузки объекта', 'propertyAlert');
+                }
+            } catch (error) {
+                console.error('Error viewing property:', error);
+                showAlert('error', 'Ошибка загрузки объекта', 'propertyAlert');
+            }
+        }
+
+        // Редактирование объекта
+        async function editProperty(propertyId) {
+            try {
+                const token = localStorage.getItem('admin_token');
+                if (!token) {
+                    throw new Error('Токен не найден. Пожалуйста, войдите заново.');
+                }
+                
+                // Получаем данные объекта
+                const response = await fetch(`/api/admin/properties/${propertyId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                console.log('GET property response:', response.status);
+                
+                if (response.ok) {
+                    const property = await response.json();
+                    currentPropertyId = propertyId;
+                    
+                    // Заполняем форму редактирования
+                    $('#editPropertyIdInput').val(property.id);
+                    $('#editPropertyTitle').val(property.title);
+                    $('#editPropertyPrice').val(property.price);
+                    $('#editPropertyStatus').val(property.status || 'available');
+                    $('#editPropertyDescription').val(property.description || '');
+                    
+                    $('#editPropertyModal').modal('show');
+                } else {
+                    const error = await response.text();
+                    console.error('Error loading property:', error);
+                    showAlert('error', 'Ошибка загрузки объекта', 'propertyAlert');
+                }
+            } catch (error) {
+                console.error('Error loading property for edit:', error);
+                showAlert('error', error.message || 'Ошибка загрузки объекта', 'propertyAlert');
+            }
+        }
+
+        // Удаление объекта
+        async function deleteProperty(propertyId) {
+            if (!confirm('Вы уверены, что хотите удалить этот объект? Это действие нельзя отменить!')) {
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('admin_token');
+                if (!token) {
+                    throw new Error('Токен не найден. Пожалуйста, войдите заново.');
+                }
+                
+                const response = await fetch(`/api/admin/properties/${propertyId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                console.log('DELETE response status:', response.status);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Delete success:', result);
+                    showAlert('success', result.message || 'Объект удален успешно', 'propertyAlert');
+                    loadProperties(); // Перезагружаем список объектов
+                    loadStats(); // Обновляем статистику
+                } else {
+                    const error = await response.text();
+                    console.error('Error deleting property:', error);
+                    let errorMessage = 'Ошибка удаления объекта';
+                    try {
+                        const errorJson = JSON.parse(error);
+                        errorMessage = errorJson.detail || errorMessage;
+                    } catch (e) {
+                        // Не удалось распарсить JSON
+                    }
+                    showAlert('error', errorMessage, 'propertyAlert');
+                }
+            } catch (error) {
+                console.error('Error deleting property:', error);
+                showAlert('error', error.message || 'Ошибка удаления объекта', 'propertyAlert');
+            }
+        }
+
+        // Обновление объекта
+        async function updateProperty() {
+            const propertyId = $('#editPropertyIdInput').val();
+            const updateData = {
+                title: $('#editPropertyTitle').val(),
+                price: parseFloat($('#editPropertyPrice').val()),
+                status: $('#editPropertyStatus').val(),
+                description: $('#editPropertyDescription').val()
+            };
+
+            // Валидация
+            if (!updateData.title || updateData.title.length < 5) {
+                showAlert('error', 'Название должно быть не менее 5 символов', 'editPropertyFormAlert');
+                return;
+            }
+            
+            if (!updateData.price || updateData.price <= 0) {
+                showAlert('error', 'Цена должна быть больше 0', 'editPropertyFormAlert');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('admin_token');
+                if (!token) {
+                    throw new Error('Токен не найден. Пожалуйста, войдите заново.');
+                }
+                
+                // Показываем индикатор загрузки
+                const btn = $('#updatePropertyBtn');
+                const originalText = btn.html();
+                btn.html('<i class="fas fa-spinner fa-spin"></i> Обновление...');
+                btn.prop('disabled', true);
+                
+                const response = await fetch(`/api/admin/properties/${propertyId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updateData)
+                });
+
+                console.log('PATCH response status:', response.status);
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Update success:', result);
+                    showAlert('success', result.message || 'Объект обновлен успешно', 'editPropertyFormAlert');
+                    loadProperties(); // Перезагружаем список объектов
+                    setTimeout(() => {
+                        $('#editPropertyModal').modal('hide');
+                    }, 1500);
+                } else {
+                    const error = await response.text();
+                    console.error('Error updating property:', error);
+                    let errorMessage = 'Ошибка обновления объекта';
+                    try {
+                        const errorJson = JSON.parse(error);
+                        errorMessage = errorJson.detail || errorMessage;
+                    } catch (e) {
+                        // Не удалось распарсить JSON
+                    }
+                    showAlert('error', errorMessage, 'editPropertyFormAlert');
+                }
+            } catch (error) {
+                console.error('Error updating property:', error);
+                showAlert('error', error.message || 'Ошибка обновления объекта', 'editPropertyFormAlert');
+            } finally {
+                // Восстанавливаем кнопку
+                const btn = $('#updatePropertyBtn');
+                btn.html('Обновить');
+                btn.prop('disabled', false);
+            }
+        }
+
+        // Сохранение нового объекта
+
+        async function saveNewProperty() {
+    console.log('=== SAVE NEW PROPERTY DEBUG ===');
+    console.log('saveNewProperty called - START');
+    
+    try {
+        // Получаем значения ВРУЧНУЮ для проверки
+        const title = $('#propertyTitle').val();
+        const price = $('#propertyPrice').val();
+        const propertyType = $('#propertyType').val();
+        const dealType = $('#dealType').val();
+        const city = $('#propertyCity').val();
+        const district = $('#propertyDistrict').val();
+        
+        console.log('Form values:', {
+            title, price, propertyType, dealType, city, district
+        });
+        
+        // ВАЛИДАЦИЯ
+        if (!title || title.trim().length < 5) {
+            showAlert('error', 'Название должно быть не менее 5 символов', 'propertyFormAlert');
+            return;
+        }
+        
+        const priceNum = parseFloat(price);
+        if (isNaN(priceNum) || priceNum <= 0) {
+            showAlert('error', 'Введите корректную цену (больше 0)', 'propertyFormAlert');
+            return;
+        }
+        
+        if (!propertyType) {
+            showAlert('error', 'Выберите тип недвижимости', 'propertyFormAlert');
+            return;
+        }
+        
+        if (!dealType) {
+            showAlert('error', 'Выберите тип сделки', 'propertyFormAlert');
+            return;
+        }
+        
+        if (!city) {
+            showAlert('error', 'Выберите город', 'propertyFormAlert');
+            return;
+        }
+        
+        if (!district || district.trim().length < 2) {
+            showAlert('error', 'Введите район (не менее 2 символов)', 'propertyFormAlert');
+            return;
+        }
+        
+        // Показываем индикатор загрузки
+        const saveBtn = $('#savePropertyBtn');
+        const originalText = saveBtn.html();
+        saveBtn.html('<i class="fas fa-spinner fa-spin"></i> Сохранение...');
+        saveBtn.prop('disabled', true);
+        
+        // Собираем данные объекта
+        const propertyData = {
+            title: title.trim(),
+            description: $('#propertyDescription').val()?.trim() || '',
+            property_type: propertyType,
+            deal_type: dealType,
+            price: priceNum,
+            city: city,
+            district: district.trim(),
+            images: [], // Начально пустой массив, изображения загрузим отдельно
+            amenities: []
+        };
+        
+        console.log('Basic property data:', propertyData);
+        
+        // Добавляем опциональные поля
+        const rooms = $('#propertyRooms').val();
+        if (rooms && rooms.trim() !== '') {
+            propertyData.rooms = rooms.trim();
+        }
+        
+        const area = $('#propertyArea').val();
+        if (area && area.trim() !== '') {
+            const areaNum = parseFloat(area);
+            if (!isNaN(areaNum) && areaNum > 0) {
+                propertyData.area = areaNum;
+            }
+        }
+        
+        const floor = $('#propertyFloor').val();
+        if (floor && floor.trim() !== '') {
+            const floorNum = parseInt(floor);
+            if (!isNaN(floorNum) && floorNum >= 0) {
+                propertyData.floor = floorNum;
+            }
+        }
+        
+        const amenities = $('#propertyAmenities').val();
+        if (amenities && amenities.trim() !== '') {
+            propertyData.amenities = amenities.split(',').map(item => item.trim()).filter(item => item);
+        }
+        
+        console.log('Final property data to send:', JSON.stringify(propertyData, null, 2));
+        
+        // Проверяем токен
+        const token = localStorage.getItem('admin_token');
+        if (!token) {
+            console.error('No token found in localStorage');
+            showAlert('error', 'Сессия истекла. Пожалуйста, войдите заново.', 'propertyFormAlert');
+            saveBtn.html(originalText);
+            saveBtn.prop('disabled', false);
+            return;
+        }
+        
+        console.log('Token found, length:', token.length);
+        
+        // 1. Создаем объект
+        console.log('Sending fetch request to /api/admin/properties/json...');
+        
+        const createResponse = await fetch('/api/admin/properties/json', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(propertyData)
+        });
+        
+        console.log('Create response status:', createResponse.status);
+        
+        const responseText = await createResponse.text();
+        console.log('Response text:', responseText);
+        
+        if (createResponse.ok) {
+            const result = JSON.parse(responseText);
+            const propertyId = result.property_id;
+            console.log('SUCCESS! Property ID:', propertyId);
+            
+            // 2. Загружаем изображения, если они есть
+            const imageFiles = $('#imageUpload')[0].files;
+            if (imageFiles && imageFiles.length > 0) {
+                console.log('Found images to upload:', imageFiles.length);
+                
+                const formData = new FormData();
+                for (let i = 0; i < imageFiles.length; i++) {
+                    formData.append('images', imageFiles[i]);
+                }
+                
+                try {
+                    const uploadResponse = await fetch(`/api/admin/properties/${propertyId}/upload-images`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        },
+                        body: formData
+                    });
+                    
+                    if (uploadResponse.ok) {
+                        const uploadResult = await uploadResponse.json();
+                        console.log('Images uploaded successfully:', uploadResult);
+                    } else {
+                        console.warn('Images upload failed, but property created');
+                    }
+                } catch (uploadError) {
+                    console.error('Error uploading images:', uploadError);
+                }
+            }
+            
+            showAlert('success', 'Объект успешно создан!', 'propertyFormAlert');
+            
+            // Очищаем форму
+            $('#propertyForm')[0].reset();
+            $('#imagePreview').empty();
+            $('#imageUpload').val('');
+            
+            // Обновляем данные
+            setTimeout(() => {
+                loadProperties();
+                loadStats();
+                $('#addPropertyModal').modal('hide');
+            }, 1500);
+        } else {
+            console.log('ERROR response');
+            let errorMessage = 'Ошибка создания объекта';
+            
+            if (responseText) {
+                try {
+                    const errorData = JSON.parse(responseText);
+                    console.log('Error data:', errorData);
+                    
+                    if (errorData.detail) {
+                        if (Array.isArray(errorData.detail)) {
+                            const errors = errorData.detail.map(err => 
+                                `${err.loc[err.loc.length - 1]}: ${err.msg}`
+                            ).join(', ');
+                            errorMessage = `Ошибки валидации: ${errors}`;
+                        } else {
+                            errorMessage = errorData.detail;
+                        }
+                    }
+                } catch (parseError) {
+                    console.log('Could not parse as JSON, using raw text');
+                    errorMessage = responseText || errorMessage;
+                }
+            }
+            
+            console.log('Final error message:', errorMessage);
+            showAlert('error', errorMessage, 'propertyFormAlert');
+        }
+    } catch (error) {
+        console.error('Unexpected error in saveNewProperty:', error);
+        console.error('Error stack:', error.stack);
+        showAlert('error', 'Непредвиденная ошибка: ' + error.message, 'propertyFormAlert');
+    } finally {
+        console.log('saveNewProperty - FINALLY block');
+        // Восстанавливаем кнопку
+        const saveBtn = $('#savePropertyBtn');
+        saveBtn.html('Сохранить');
+        saveBtn.prop('disabled', false);
+    }
+    
+    console.log('saveNewProperty called - END');
+}
+
+        // Показать модальное окно добавления объекта
+        function showAddPropertyModal() {
+            // Сбрасываем форму при открытии
+            $('#propertyForm')[0].reset();
+            $('#imagePreview').empty();
+            $('#propertyFormAlert').hide();
+            $('#addPropertyModal').modal('show');
+        }
+
+        // Обработка загрузки изображений
+        function handleImageUpload(event) {
+    console.log('handleImageUpload called');
+    
+    // Получаем файлы из input
+    const files = event.target.files;
+    const preview = document.getElementById('imagePreview');
+    
+    if (!preview) {
+        console.error('Element imagePreview not found');
+        return;
+    }
+    
+    preview.innerHTML = '';
+    
+    // Ограничиваем количество файлов
+    if (files.length > 10) {
+        showAlert('warning', 'Максимум 10 изображений', 'propertyFormAlert');
+        event.target.value = '';
+        return;
+    }
+    
+    for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        // Проверяем размер файла (макс 5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            showAlert('warning', `Файл "${file.name}" превышает 5MB и не будет загружен`, 'propertyFormAlert');
+            continue;
+        }
+        
+        // Проверяем тип файла
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpg'];
+        if (!validTypes.includes(file.type.toLowerCase())) {
+            showAlert('warning', `Файл "${file.name}" имеет недопустимый тип`, 'propertyFormAlert');
+            continue;
+        }
+        
+        const reader = new FileReader();
+        
+        reader.onload = function(e) {
+            const imgContainer = document.createElement('div');
+            imgContainer.style.position = 'relative';
+            imgContainer.style.display = 'inline-block';
+            imgContainer.style.margin = '5px';
+            
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.width = '100px';
+            img.style.height = '100px';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '5px';
+            img.style.border = '1px solid #ddd';
+            
+            // Добавляем кнопку удаления
+            const removeBtn = document.createElement('button');
+            removeBtn.innerHTML = '<i class="fas fa-times"></i>';
+            removeBtn.style.position = 'absolute';
+            removeBtn.style.top = '2px';
+            removeBtn.style.right = '2px';
+            removeBtn.style.background = 'rgba(220, 53, 69, 0.9)';
+            removeBtn.style.color = 'white';
+            removeBtn.style.border = 'none';
+            removeBtn.style.borderRadius = '50%';
+            removeBtn.style.width = '20px';
+            removeBtn.style.height = '20px';
+            removeBtn.style.cursor = 'pointer';
+            removeBtn.style.fontSize = '10px';
+            
+            // Удаляем изображение из предпросмотра и input
+            removeBtn.onclick = function() {
+                imgContainer.remove();
+                // Создаем новый FileList без удаленного файла
+                const dataTransfer = new DataTransfer();
+                const fileInput = document.getElementById('imageUpload');
+                for (let j = 0; j < fileInput.files.length; j++) {
+                    if (j !== i) {
+                        dataTransfer.items.add(fileInput.files[j]);
+                    }
+                }
+                fileInput.files = dataTransfer.files;
+            };
+            
+            imgContainer.appendChild(img);
+            imgContainer.appendChild(removeBtn);
+            preview.appendChild(imgContainer);
+        }
+        
+        reader.readAsDataURL(file);
+    }
+}
+
+        // Загрузка пользователей
+        async function loadUsers() {
+            try {
+                const token = localStorage.getItem('admin_token');
+                const response = await fetch('/api/admin/users?limit=1000', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    users = result.users || [];
+                    filteredUsers = [...users];
+                    currentPage = 1;
+                    updateUsersTable();
+                } else {
+                    console.error('Ошибка загрузки пользователей:', response.status);
+                    showAlert('error', 'Ошибка загрузки пользователей', 'usersAlert');
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                showAlert('error', 'Ошибка загрузки пользователей', 'usersAlert');
+            }
+        }
+
+        // Фильтрация пользователей
+        function filterUsers() {
+            const role = $('#filterUserRole').val();
+            const status = $('#filterUserStatus').val();
+            const search = $('#searchUser').val().toLowerCase();
+
+            filteredUsers = users.filter(user => {
+                let matches = true;
+
+                if (role && user.role !== role) matches = false;
+                if (status && user.status !== status) matches = false;
+                if (search && !user.name.toLowerCase().includes(search) && !user.email.toLowerCase().includes(search)) {
+                    matches = false;
+                }
+
+                return matches;
+            });
+
+            currentPage = 1;
+            updateUsersTable();
+        }
+
+        // Обновление таблицы пользователей
+        function updateUsersTable() {
+            const tbody = $('#usersTableBody');
+            const pagination = $('#usersPagination');
+            
+            if (!filteredUsers || filteredUsers.length === 0) {
+                tbody.html(`
+                    <tr>
+                        <td colspan="8" class="text-center">
+                            <div class="text-muted py-4">
+                                <i class="fas fa-users fa-2x mb-3"></i>
+                                <p>Пользователи не найдены</p>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+                pagination.empty();
+                return;
+            }
+
+            // Пагинация
+            const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageUsers = filteredUsers.slice(startIndex, endIndex);
+
+            // Обновление пагинации
+            let paginationHtml = '';
+            if (totalPages > 1) {
+                paginationHtml = `
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changeUsersPage(${currentPage - 1})">Назад</a>
+                    </li>
+                `;
+
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                        paginationHtml += `
+                            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                                <a class="page-link" href="#" onclick="changeUsersPage(${i})">${i}</a>
+                            </li>
+                        `;
+                    } else if (i === currentPage - 3 || i === currentPage + 3) {
+                        paginationHtml += `<li class="page-item disabled"><a class="page-link" href="#">...</a></li>`;
+                    }
+                }
+
+                paginationHtml += `
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changeUsersPage(${currentPage + 1})">Вперед</a>
+                    </li>
+                `;
+            }
+
+            pagination.html(paginationHtml);
+
+            // Обновление таблицы
+            let html = '';
+            pageUsers.forEach(user => {
+                const avatarText = user.name ? user.name.charAt(0).toUpperCase() : 'U';
+                
+                const roleText = {
+                    'admin': 'Админ',
+                    'user': 'Пользователь',
+                    'manager': 'Менеджер'
+                };
+                
+                const statusText = {
+                    'active': 'Активный',
+                    'blocked': 'Заблокирован',
+                    'pending': 'Ожидает'
+                };
+                
+                const statusClass = {
+                    'active': 'badge-success',
+                    'blocked': 'badge-danger',
+                    'pending': 'badge-warning'
+                };
+
+                const regDate = new Date(user.created_at || Date.now()).toLocaleDateString('ru-RU');
+
+                html += `
+                    <tr>
+                        <td>${user.id}</td>
+                        <td>
+                            <div class="user-avatar" style="width: 40px; height: 40px;">${avatarText}</div>
+                        </td>
+                        <td>
+                            <strong>${user.name}</strong>
+                            <div class="text-sm text-muted">ID: ${user.id}</div>
+                        </td>
+                        <td>${user.email}</td>
+                        <td>
+                            <span class="badge ${user.role === 'admin' ? 'badge-danger' : user.role === 'manager' ? 'badge-info' : 'badge-secondary'}">
+                                ${roleText[user.role] || user.role}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge ${statusClass[user.status] || 'badge-success'}">
+                                ${statusText[user.status] || 'Активный'}
+                            </span>
+                        </td>
+                        <td>${regDate}</td>
+                        <td>
+                            <div class="d-flex">
+                                <button class="btn btn-info btn-sm mr-1" title="Просмотр" onclick="viewUser(${user.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-warning btn-sm mr-1" title="Изменить роль" onclick="editUserRole(${user.id})">
+                                    <i class="fas fa-user-cog"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" title="Заблокировать" onclick="toggleUserStatus(${user.id})">
+                                    <i class="fas fa-ban"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.html(html);
+        }
+
+        // Изменение страницы пользователей
+        function changeUsersPage(page) {
+            currentPage = page;
+            updateUsersTable();
+        }
+
+        // Обновить список пользователей
+        function refreshUsers() {
+            loadUsers();
+            showAlert('success', 'Список пользователей обновлен', 'usersAlert');
+        }
+
+        // Загрузка заказов
+        async function loadOrders() {
+            try {
+                const token = localStorage.getItem('admin_token');
+                const response = await fetch('/api/admin/orders?limit=1000', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    orders = result.orders || [];
+                    filteredOrders = [...orders];
+                    currentPage = 1;
+                    updateOrdersTable();
+                } else {
+                    console.error('Ошибка загрузки заказов:', response.status);
+                    showAlert('error', 'Ошибка загрузки заказов', 'ordersAlert');
+                }
+            } catch (error) {
+                console.error('Error loading orders:', error);
+                showAlert('error', 'Ошибка загрузки заказов', 'ordersAlert');
+            }
+        }
+
+        // Фильтрация заказов
+        function filterOrders() {
+            const status = $('#filterOrderStatus').val();
+            const type = $('#filterOrderType').val();
+            const date = $('#filterOrderDate').val();
+            const search = $('#searchOrder').val().toLowerCase();
+
+            filteredOrders = orders.filter(order => {
+                let matches = true;
+
+                if (status && order.status !== status) matches = false;
+                if (type && order.payment_type !== type) matches = false;
+                if (date) {
+                    const orderDate = new Date(order.created_at).toISOString().split('T')[0];
+                    if (orderDate !== date) matches = false;
+                }
+                if (search && !order.user_name.toLowerCase().includes(search) && !order.property_title.toLowerCase().includes(search)) {
+                    matches = false;
+                }
+
+                return matches;
+            });
+
+            currentPage = 1;
+            updateOrdersTable();
+        }
+
+        // Обновление таблицы заказов
+        function updateOrdersTable() {
+            const tbody = $('#ordersTableBody');
+            const pagination = $('#ordersPagination');
+            
+            if (!filteredOrders || filteredOrders.length === 0) {
+                tbody.html(`
+                    <tr>
+                        <td colspan="8" class="text-center">
+                            <div class="text-muted py-4">
+                                <i class="fas fa-shopping-cart fa-2x mb-3"></i>
+                                <p>Заказы не найдены</p>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+                pagination.empty();
+                return;
+            }
+
+            // Пагинация
+            const totalPages = Math.ceil(filteredOrders.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageOrders = filteredOrders.slice(startIndex, endIndex);
+
+            // Обновление пагинации
+            let paginationHtml = '';
+            if (totalPages > 1) {
+                paginationHtml = `
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changeOrdersPage(${currentPage - 1})">Назад</a>
+                    </li>
+                `;
+
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                        paginationHtml += `
+                            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                                <a class="page-link" href="#" onclick="changeOrdersPage(${i})">${i}</a>
+                            </li>
+                        `;
+                    } else if (i === currentPage - 3 || i === currentPage + 3) {
+                        paginationHtml += `<li class="page-item disabled"><a class="page-link" href="#">...</a></li>`;
+                    }
+                }
+
+                paginationHtml += `
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changeOrdersPage(${currentPage + 1})">Вперед</a>
+                    </li>
+                `;
+            }
+
+            pagination.html(paginationHtml);
+
+            // Обновление таблицы
+            let html = '';
+            pageOrders.forEach(order => {
+                const statusText = {
+                    'pending': 'В ожидании',
+                    'processing': 'В обработке',
+                    'completed': 'Завершен',
+                    'cancelled': 'Отменен'
+                };
+                
+                const statusClass = {
+                    'pending': 'badge-warning',
+                    'processing': 'badge-info',
+                    'completed': 'badge-success',
+                    'cancelled': 'badge-danger'
+                };
+                
+                const paymentTypeText = {
+                    'crypto': 'Крипто',
+                    'traditional': 'Традиционный'
+                };
+                
+                const paymentTypeClass = {
+                    'crypto': 'badge-primary',
+                    'traditional': 'badge-secondary'
+                };
+                
+                const orderDate = new Date(order.created_at).toLocaleDateString('ru-RU');
+
+                html += `
+                    <tr>
+                        <td>${order.id}</td>
+                        <td>
+                            <strong>${order.user_name}</strong>
+                            <div class="text-sm text-muted">${order.user_email}</div>
+                        </td>
+                        <td>${order.property_title}</td>
+                        <td>
+                            <strong class="text-success">$${(order.amount || 0).toLocaleString()}</strong>
+                        </td>
+                        <td>
+                            <span class="badge ${paymentTypeClass[order.payment_type] || 'badge-secondary'}">
+                                ${paymentTypeText[order.payment_type] || order.payment_type}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge ${statusClass[order.status] || 'badge-warning'}">
+                                ${statusText[order.status] || 'В ожидании'}
+                            </span>
+                        </td>
+                        <td>${orderDate}</td>
+                        <td>
+                            <div class="d-flex">
+                                <button class="btn btn-info btn-sm mr-1" title="Просмотр" onclick="viewOrder(${order.id})">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-success btn-sm mr-1" title="Подтвердить" onclick="updateOrderStatus(${order.id}, 'completed')">
+                                    <i class="fas fa-check"></i>
+                                </button>
+                                <button class="btn btn-danger btn-sm" title="Отменить" onclick="updateOrderStatus(${order.id}, 'cancelled')">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.html(html);
+        }
+
+        // Изменение страницы заказов
+        function changeOrdersPage(page) {
+            currentPage = page;
+            updateOrdersTable();
+        }
+
+        // Обновить список заказов
+        function refreshOrders() {
+            loadOrders();
+            showAlert('success', 'Список заказов обновлен', 'ordersAlert');
+        }
+
+        // Загрузка настроек крипто-кошелька
+        async function loadCryptoWallet() {
+            try {
+                const token = localStorage.getItem('admin_token');
+                const response = await fetch('/api/admin/crypto-wallet', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const wallet = await response.json();
+                    updateCryptoWalletDisplay(wallet);
+                    
+                    // Загружаем транзакции
+                    await loadCryptoTransactions();
+                } else {
+                    console.error('Ошибка загрузки кошелька:', response.status);
+                    showAlert('warning', 'Настройки крипто-кошелька не найдены', 'cryptoAlert');
+                }
+            } catch (error) {
+                console.error('Error loading crypto wallet:', error);
+                showAlert('error', 'Ошибка загрузки кошелька', 'cryptoAlert');
+            }
+        }
+
+        // Обновление отображения кошелька
+        function updateCryptoWalletDisplay(wallet) {
+            if (wallet && wallet.wallet_address) {
+                $('#cryptoWalletAddress').text(wallet.wallet_address);
+                $('#cryptoNetwork').text(wallet.network || 'Не указано');
+                $('#cryptoCurrency').text(wallet.currency || 'Не указано');
+                $('#cryptoStatus').text(wallet.is_active ? 'Активен' : 'Неактивен')
+                    .removeClass('badge-secondary')
+                    .addClass(wallet.is_active ? 'badge-success' : 'badge-danger');
+            } else {
+                $('#cryptoWalletAddress').text('Не настроено');
+                $('#cryptoNetwork').text('Не настроено');
+                $('#cryptoCurrency').text('Не настроено');
+                $('#cryptoStatus').text('Не настроено')
+                    .removeClass('badge-success badge-danger')
+                    .addClass('badge-secondary');
+            }
+        }
+
+        // Загрузка крипто-транзакций
+        async function loadCryptoTransactions() {
+            try {
+                const token = localStorage.getItem('admin_token');
+                const response = await fetch('/api/admin/crypto-transactions', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const transactions = result.transactions || [];
+                    updateCryptoTransactions(transactions);
+                    
+                    // Обновляем статистику
+                    updateCryptoStats(transactions);
+                } else {
+                    console.error('Ошибка загрузки транзакций:', response.status);
+                    updateCryptoTransactions([]);
+                }
+            } catch (error) {
+                console.error('Error loading crypto transactions:', error);
+                updateCryptoTransactions([]);
+            }
+        }
+
+        // Обновление таблицы транзакций
+        function updateCryptoTransactions(transactions) {
+            const tbody = $('#cryptoTransactionsBody');
+            
+            if (!transactions || transactions.length === 0) {
+                tbody.html(`
+                    <tr>
+                        <td colspan="7" class="text-center">
+                            <div class="text-muted py-3">
+                                <i class="fas fa-coins fa-2x mb-3"></i>
+                                <p>Нет транзакций</p>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+                return;
+            }
+
+            let html = '';
+            transactions.forEach(tx => {
+                const statusText = {
+                    'pending': 'В ожидании',
+                    'confirmed': 'Подтверждена',
+                    'failed': 'Ошибка'
+                };
+                
+                const statusClass = {
+                    'pending': 'badge-warning',
+                    'confirmed': 'badge-success',
+                    'failed': 'badge-danger'
+                };
+                
+                const txDate = new Date(tx.created_at).toLocaleDateString('ru-RU');
+
+                html += `
+                    <tr>
+                        <td>${tx.id}</td>
+                        <td>
+                            <strong>$${(tx.amount || 0).toLocaleString()}</strong>
+                        </td>
+                        <td>${tx.currency}</td>
+                        <td>
+                            <code style="font-size: 10px;">${tx.tx_hash.substring(0, 20)}...</code>
+                            <button class="btn btn-sm btn-info ml-2" onclick="copyToClipboard('${tx.tx_hash}')">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </td>
+                        <td>
+                            <span class="badge ${statusClass[tx.status] || 'badge-warning'}">
+                                ${statusText[tx.status] || 'В ожидании'}
+                            </span>
+                        </td>
+                        <td>${txDate}</td>
+                        <td>${tx.user_name || 'Неизвестно'}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.html(html);
+        }
+
+        // Обновление статистики крипто-платежей
+        function updateCryptoStats(transactions) {
+            const totalTransactions = transactions.length;
+            const successful = transactions.filter(tx => tx.status === 'confirmed').length;
+            const pending = transactions.filter(tx => tx.status === 'pending').length;
+            const totalAmount = transactions
+                .filter(tx => tx.status === 'confirmed')
+                .reduce((sum, tx) => sum + (tx.amount || 0), 0);
+            
+            $('#totalCryptoTransactions').text(totalTransactions);
+            $('#successfulCryptoPayments').text(successful);
+            $('#pendingCryptoPayments').text(pending);
+            $('#totalCryptoAmount').text('$' + totalAmount.toLocaleString());
+        }
+
+        // Показать модальное окно настроек крипто-кошелька
+        function showCryptoSettingsModal() {
+            $('#cryptoSettingsForm')[0].reset();
+            $('#cryptoSettingsAlert').hide();
+            $('#cryptoSettingsModal').modal('show');
+        }
+
+        // Сохранение настроек крипто-кошелька
+        async function saveCryptoSettings() {
+            const address = $('#cryptoWalletAddressInput').val();
+            const network = $('#cryptoNetworkInput').val();
+            const currency = $('#cryptoCurrencyInput').val();
+            const notes = $('#cryptoNotes').val();
+
+            if (!address || address.trim() === '') {
+                showAlert('error', 'Введите адрес кошелька', 'cryptoSettingsAlert');
+                return;
+            }
+
+            if (!network) {
+                showAlert('error', 'Выберите сеть', 'cryptoSettingsAlert');
+                return;
+            }
+
+            if (!currency) {
+                showAlert('error', 'Выберите криптовалюту', 'cryptoSettingsAlert');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('admin_token');
+                const response = await fetch('/api/admin/crypto-wallet', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        wallet_address: address.trim(),
+                        network: network,
+                        currency: currency,
+                        notes: notes.trim(),
+                        is_active: true
+                    })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    showAlert('success', result.message || 'Настройки сохранены!', 'cryptoSettingsAlert');
+                    setTimeout(() => {
+                        $('#cryptoSettingsModal').modal('hide');
+                        loadCryptoWallet();
+                    }, 1500);
+                } else {
+                    const error = await response.text();
+                    let errorMessage = 'Ошибка сохранения настроек';
+                    try {
+                        const errorData = JSON.parse(error);
+                        errorMessage = errorData.detail || errorMessage;
+                    } catch (e) {
+                        // Не удалось распарсить JSON
+                    }
+                    showAlert('error', errorMessage, 'cryptoSettingsAlert');
+                }
+            } catch (error) {
+                console.error('Error saving crypto settings:', error);
+                showAlert('error', 'Ошибка сохранения настроек', 'cryptoSettingsAlert');
+            }
+        }
+
+        // Копирование адреса в буфер обмена
+        function copyCryptoAddress() {
+            const address = $('#cryptoWalletAddress').text();
+            if (address && address !== 'Не настроено') {
+                navigator.clipboard.writeText(address).then(() => {
+                    showAlert('success', 'Адрес скопирован в буфер обмена', 'cryptoAlert');
+                });
+            }
+        }
+
+        // Копирование в буфер обмена
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                showAlert('success', 'Скопировано в буфер обмена', 'cryptoAlert');
+            });
+        }
+
+        // Загрузка логов
+        async function loadAuditLogs() {
+            try {
+                const token = localStorage.getItem('admin_token');
+                const response = await fetch('/api/admin/logs?limit=500', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    logs = result.logs || [];
+                    filteredLogs = [...logs];
+                    currentPage = 1;
+                    updateLogsTable();
+                } else {
+                    console.error('Ошибка загрузки логов:', response.status);
+                    showAlert('error', 'Ошибка загрузки логов', 'logsAlert');
+                }
+            } catch (error) {
+                console.error('Error loading logs:', error);
+                showAlert('error', 'Ошибка загрузки логов', 'logsAlert');
+            }
+        }
+
+        // Фильтрация логов
+        function filterLogs() {
+            const level = $('#filterLogLevel').val();
+            const type = $('#filterLogType').val();
+            const date = $('#filterLogDate').val();
+            const search = $('#searchLog').val().toLowerCase();
+
+            filteredLogs = logs.filter(log => {
+                let matches = true;
+
+                if (level && log.level !== level) matches = false;
+                if (type && log.action_type !== type) matches = false;
+                if (date) {
+                    const logDate = new Date(log.created_at).toISOString().split('T')[0];
+                    if (logDate !== date) matches = false;
+                }
+                if (search && !log.action.toLowerCase().includes(search) && !log.details.toLowerCase().includes(search)) {
+                    matches = false;
+                }
+
+                return matches;
+            });
+
+            currentPage = 1;
+            updateLogsTable();
+        }
+
+        // Обновление таблицы логов
+        function updateLogsTable() {
+            const tbody = $('#logsTableBody');
+            const pagination = $('#logsPagination');
+            
+            if (!filteredLogs || filteredLogs.length === 0) {
+                tbody.html(`
+                    <tr>
+                        <td colspan="8" class="text-center">
+                            <div class="text-muted py-4">
+                                <i class="fas fa-clipboard-list fa-2x mb-3"></i>
+                                <p>Логи не найдены</p>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+                pagination.empty();
+                return;
+            }
+
+            // Пагинация
+            const totalPages = Math.ceil(filteredLogs.length / itemsPerPage);
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+            const pageLogs = filteredLogs.slice(startIndex, endIndex);
+
+            // Обновление пагинации
+            let paginationHtml = '';
+            if (totalPages > 1) {
+                paginationHtml = `
+                    <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changeLogsPage(${currentPage - 1})">Назад</a>
+                    </li>
+                `;
+
+                for (let i = 1; i <= totalPages; i++) {
+                    if (i === 1 || i === totalPages || (i >= currentPage - 2 && i <= currentPage + 2)) {
+                        paginationHtml += `
+                            <li class="page-item ${i === currentPage ? 'active' : ''}">
+                                <a class="page-link" href="#" onclick="changeLogsPage(${i})">${i}</a>
+                            </li>
+                        `;
+                    } else if (i === currentPage - 3 || i === currentPage + 3) {
+                        paginationHtml += `<li class="page-item disabled"><a class="page-link" href="#">...</a></li>`;
+                    }
+                }
+
+                paginationHtml += `
+                    <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                        <a class="page-link" href="#" onclick="changeLogsPage(${currentPage + 1})">Вперед</a>
+                    </li>
+                `;
+            }
+
+            pagination.html(paginationHtml);
+
+            // Обновление таблицы
+            let html = '';
+            pageLogs.forEach(log => {
+                const levelText = {
+                    'info': 'Информация',
+                    'warning': 'Предупреждение',
+                    'error': 'Ошибка',
+                    'security': 'Безопасность'
+                };
+                
+                const levelClass = {
+                    'info': 'badge-info',
+                    'warning': 'badge-warning',
+                    'error': 'badge-danger',
+                    'security': 'badge-danger'
+                };
+                
+                const typeText = {
+                    'auth': 'Аутентификация',
+                    'property': 'Недвижимость',
+                    'user': 'Пользователь',
+                    'order': 'Заказ',
+                    'system': 'Система'
+                };
+                
+                const typeClass = {
+                    'auth': 'badge-primary',
+                    'property': 'badge-success',
+                    'user': 'badge-warning',
+                    'order': 'badge-info',
+                    'system': 'badge-secondary'
+                };
+                
+                const logDate = new Date(log.created_at).toLocaleString('ru-RU');
+
+                html += `
+                    <tr>
+                        <td>${log.id}</td>
+                        <td>${logDate}</td>
+                        <td>
+                            <span class="badge ${levelClass[log.level] || 'badge-info'}">
+                                ${levelText[log.level] || 'Информация'}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="badge ${typeClass[log.action_type] || 'badge-secondary'}">
+                                ${typeText[log.action_type] || log.action_type}
+                            </span>
+                        </td>
+                        <td>${log.admin_name || 'Система'}</td>
+                        <td>${log.action}</td>
+                        <td style="max-width: 300px; word-wrap: break-word;">${log.details || ''}</td>
+                        <td>${log.ip_address || 'N/A'}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.html(html);
+        }
+
+        // Изменение страницы логов
+        function changeLogsPage(page) {
+            currentPage = page;
+            updateLogsTable();
+        }
+
+        // Экспорт логов
+        function exportLogs() {
+            const dataStr = JSON.stringify(filteredLogs || logs, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `brokerok_logs_${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showAlert('success', 'Логи экспортированы', 'logsAlert');
+        }
+
+        // Универсальная функция для показа алертов
+        function showAlert(type, message, containerId) {
+            const container = $(`#${containerId}`);
+            const alertClass = type === 'error' ? 'alert-danger' : 
+                             type === 'success' ? 'alert-success' : 
+                             type === 'info' ? 'alert-info' : 'alert-warning';
+            
+            container.removeClass('alert-danger alert-success alert-info alert-warning')
+                     .addClass(`alert ${alertClass}`)
+                     .html(`
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span>${message}</span>
+                            <button type="button" class="close text-white" onclick="$('#${containerId}').hide()">
+                                <span>&times;</span>
+                            </button>
+                        </div>
+                     `)
+                     .show();
+            
+            // Автоматически скрывать через 5 секунд для success/info
+            if (type === 'success' || type === 'info') {
+                setTimeout(() => {
+                    container.fadeOut();
+                }, 5000);
+            }
+        }
+
+        // Обработка нажатия Enter в формах
+        $(document).ready(function() {
+            // Обработка нажатия Enter в форме
+            $('#propertyForm input, #propertyForm select, #propertyForm textarea').on('keypress', function(e) {
+                if (e.which === 13) { // Enter
+                    e.preventDefault();
+                    saveNewProperty();
+                }
+            });
+            
+            // Обработка модального окна
+            $('#addPropertyModal').on('shown.bs.modal', function() {
+                $('#propertyTitle').focus();
+            });
+        });
+
+    </script>
+</body>
+</html>
